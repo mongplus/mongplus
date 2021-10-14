@@ -1,0 +1,49 @@
+Pet data
+https://pet.mongplus.net/api/upload
+
+[매개변수]
+**/
+* image : 이미지 파일(멀티파트)
+/**
+* text : 비문 데이터 텍스트 값
+/**
+* key : S3에 해당하는 파일 값(S3 키 값)
+
+[결과]
+/**
+* hash : 데이터 조회용 해시 값
+
+/**
+* curl --location --request POST 'https://pet.mongplus.net/api/upload' \
+* --form 'image=@"/C:/Users/user/Pictures/2eafc91901f4da9fb1f5bdc415f2c6dc.jpg"' \
+* --form 'key="S3Key"' \
+* --form 'text="비문데이터 텍스트 값"'
+{
+  "code": 0,
+  "message": "",
+  "data": {
+
+https://pet.mongplus.net/api/pet_data
+
+[매개변수]
+**/ 
+* hash : 데이터 조회용 해시 값
+
+[결과]
+/**
+* url : 이미지 URL
+/**
+* text : 비문 데이터 텍스트 값
+/**
+* curl --location --request POST 'https://pet.mongplus.net/api/pet_data' \
+* --form 'hash="344406f8535b463a9e0f5fe48cef12d6"'
+{
+  "code": 0,
+  "message": "",
+  "data": {
+    "url":
+/**
+"https://s3.ap-northeast-2.amazonaws.com/mongplus/S3Key/7f0cd19891c2b64087657a84a7587f85.jpg",
+"text": "비문데이터 텍스트 값"
+  }
+}

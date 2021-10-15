@@ -1,0 +1,79 @@
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/meta.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/header.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/story-sub_nav.html";
+include $_SERVER['DOCUMENT_ROOT']."/_library/function_navigation.php";
+
+$info = F_navigation(array("mode"=>"read","navi_no"=>$navi_no));
+?>
+<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=83bfuniegk&amp;submodules=panorama,geocoder,drawing,visualization"></script>
+<!-- 창크기 562px -->
+<link rel="stylesheet" type="text/css" href="/css/map_print.css">
+<div id="print_map">
+	<div class="print_map_inner">
+
+		<div class="p_m_top">
+			<h3>
+				지도 인쇄하기
+			</h3>
+		</div><!-- p_m_top end -->
+
+		<div class="p_m_info">
+			<ul>
+				<li>
+					<h4>
+						매장명
+					</h4>
+					<span>
+						<?=$info['company']?>
+					</span>
+				</li>
+				<li>
+					<h4>
+						전화번호
+					</h4>
+					<span>
+						<?=$info['tel']?>
+					</span>
+				</li>
+				<li>
+					<h4>
+						주소
+					</h4>
+					<span>
+						<?=$info['addr']?>
+					</span>
+				</li>
+			</ul>
+		</div><!--  p_m_info end -->
+		
+		
+		<!-- 지도 -->
+		<div class="p_map" id="map">
+			
+		</div>
+		<!-- 지도 끝 -->
+		
+		<a class="page_print_btn" onclick="window.print();return false;" title="인쇄" alt="인쇄">
+			인쇄하기
+		</a>
+		
+	</div><!--  print_map_inner end -->
+</div><!-- end -->
+<script>
+var x = "<?=$_GET['x']?>";
+var y = "<?=$_GET['y']?>";
+
+var map = new naver.maps.Map('map', {
+    center: new naver.maps.LatLng(y, x),
+    zoom: 10
+});
+
+var marker = new naver.maps.Marker({
+    position: new naver.maps.LatLng(y, x),
+    map: map
+});
+</script>
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/foot.html";
+?>

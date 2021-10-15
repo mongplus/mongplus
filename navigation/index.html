@@ -1,0 +1,771 @@
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/meta.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/header.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/story-sub_nav.html";
+
+$addr_left = '';
+if($gubun == 'top'){
+	$list = $db->get_list("SELECT * FROM navigation WHERE addr LIKE '%".$navit."%' OR company='".$navit."'");
+}else if($gubun == 'left'){
+	$add_query = '';
+	if($filter != ''){
+		$add_query .= ' AND company="'.$filter.'"';
+	}
+
+	if($citys != ''){
+		$add_query .= ' AND city_no="'.$citys.'"';
+		$ct = $db->get_data("SELECT * FROM city WHERE city_no='".$citys."'");
+		$addr_left = $ct['name'];
+	}
+
+	if($areas != ''){
+		$add_query .= ' AND area_no="'.$areas.'"';
+		$ar = $db->get_data("SELECT * FROM area WHERE area_no='".$areas."'");
+		if($addr_left != ''){ $addr_left .= " "; }
+		$addr_left .= $ar['name'];
+	}
+
+	if($dongs != ''){
+		$add_query .= ' AND dong_no="'.$dongs.'"';
+		$dn = $db->get_data("SELECT * FROM dong WHERE dong_no='".$dongs."'");
+		if($addr_left != ''){ $addr_left .= " "; }
+		$addr_left .= $dn['name'];
+	}
+
+	$list = $db->get_list("SELECT * FROM navigation WHERE 1 ".$add_query);
+}else{
+	//$list = $db->get_list("SELECT * FROM navigation WHERE 1");
+}
+
+if($citys != ''){
+	$cityData = $db->get_data("SELECT * FROM city WHERE city_no='".$citys."'");
+
+	$areaList = $db->get_list("SELECT * FROM area WHERE city_no='".$cityData['city_no']."'");
+
+	if(count($areaList['area_no']) > 0){
+		$html = '';
+
+		for($i=0;$i<count($areaList['area_no']);$i++){
+			$num = '';
+			$areaD = $db->get_data("SELECT COUNT(*) AS cnt FROM navigation WHERE area_no='".$areaList['area_no'][$i]."'");
+			$areaHtml .= '<li><a class="area_a areaBtn" data-no="'.$areaList['area_no'][$i].'">'.$areaList['name'][$i].'('.$areaD['cnt'].')</a></li>';
+		}
+	}
+}
+
+if($areas != ''){
+	$areaData = $db->get_data("SELECT * FROM area WHERE area_no='".$areas."'");
+
+	$dongList = $db->get_list("SELECT * FROM dong WHERE area_no='".$areaData['area_no']."'");
+
+	if(count($dongList['dong_no']) > 0){
+		$error['error'] = true;
+		$dongHtml = '';
+
+		for($i=0;$i<count($dongList['dong_no']);$i++){
+			$num = '';
+			$dongD = $db->get_data("SELECT COUNT(*) AS cnt FROM navigation WHERE dong_no='".$dongList['dong_no'][$i]."'");
+			$dongHtml .= '<li><a class="area_a dongBtn" data-no="'.$dongList['dong_no'][$i].'">'.$dongList['name'][$i].'('.$dongD['cnt'].')</a></li>';
+		}
+	}
+}
+
+if($dongs != ''){
+	$dongData = $db->get_data("SELECT * FROM dong WHERE dong_no='".$dongs."'");
+}
+
+?>
+<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=83bfuniegk&amp;submodules=panorama,geocoder,drawing,visualization"></script>
+<script language="javascript">
+$(document).ready(function(){
+	$(document).on("change",'[name="filters"]',function(){
+		var filter = $('[name="filters"]').val();
+		$('[name="filter"]').val(filter);
+	});
+
+	$(document).on("click",".cityBtn",function(){
+		var city = $(this).text();
+		var no = $(this).data("no");
+		$('[name="citys"]').val(no);
+
+		$(".cityList").find(".area_selection").show();
+		$(".cityList").find(".area_selection").find("p").html(city);
+
+		$.post("./info.php",{
+			mode : "city_list",
+			no	 : no
+		},function(e){
+			if(e.error){
+				$(".areaList").find("ul").html(e.html);
+				$(".areaList").show();
+				$(".cityBox").hide();
+				$(".areaBox").show();
+			}
+		},"json");
+		
+	});
+
+	$(document).on("click",".areaBtn",function(){
+		var area = $(this).text();
+		var no = $(this).data("no");
+		$('[name="areas"]').val(no);
+
+		$(".areaList").find(".area_selection").show();
+		$(".areaList").find(".area_selection").find("p").html(area);
+
+		$.post("./info.php",{
+			mode : "area_list",
+			no	 : no
+		},function(e){
+			if(e.error){
+				$(".dongList").find("ul").html(e.html);
+				$(".dongList").show();
+				$(".areaBox").hide();
+			}
+		},"json");
+		
+	});
+
+	$(document).on("click",".dongBtn",function(){
+		var dong = $(this).text();
+		var no = $(this).data("no");
+		$('[name="dongs"]').val(no);
+
+		$(".dongList").find(".area_selection").show();
+		$(".dongList").find(".area_selection").find("p").html(dong);
+		$(".doxBox").hide();
+		
+	});
+
+	$(document).on("click",".cityRestBtn",function(){
+		$(this).parent().hide();
+		$('[name="citys"]').val("");
+		$(".areaList").find("ul").html("");
+		$(".areaList").hide();
+		$(".areaList").find(".area_selection").hide();
+		$(".dongList").find("ul").html("");
+		$(".dongList").hide();
+		$(".dongList").find(".area_selection").hide();
+		$(".cityBox").show();
+	});
+
+	$(document).on("click",".areaRestBtn",function(){
+		$(this).parent().hide();
+		$('[name="areas"]').val("");
+		$(".dongList").find("ul").html("");
+		$(".dongList").hide();
+		$(".dongList").find(".area_selection").hide();
+		$(".areaBox").show();
+	});
+
+	$(document).on("click",".dongRestBtn",function(){
+		$(this).parent().hide();
+		$('[name="dongs"]').val("");
+		$(".dongList").find(".area_selection").hide();
+		$(".dongBox").show();
+	});
+
+	$(document).on("click",".schLeftBtn",function(){
+		$('[name="gubun"]').val("left");
+		$('[name="navit"]').val("");
+		$('[name="s_frm"]').submit();
+	});
+
+	$(document).on("click",".schrightBtn",function(){
+		var navit = $('.navit').val();
+		$('[name="gubun"]').val("top");
+		$('[name="filter"]').val("");
+		$('[name="navit"]').val(navit);
+		$('[name="citys"]').val("");
+		$('[name="areas"]').val("");
+		$('[name="dongs"]').val("");
+		$('[name="s_frm"]').submit();
+	});
+
+	$(document).on("click",".resetBtn",function(){
+		location.href="/story/navigation/";
+	});
+
+	$(document).on("click",".result_list",function(){
+		var no = $(this).index();
+		var x = $(this).data("cax");
+		var y = $(this).data("cay");
+		has_maker(no, x, y);
+	});
+
+	$(document).on("click",".share_pro_div_close",function(){
+		$(".share_pro_div").hide();
+	});
+
+});
+</script>
+<!-- navigation css -->
+<link rel="stylesheet" type="text/css" href="/css/navigation.css">
+<form method="get" name="s_frm" action="<?=$PHP_SELF?>">
+<input type="hidden" name="navit" value="<?=$navit?>">
+<input type="hidden" name="filter" value="<?=$filter?>">
+<input type="hidden" name="citys" value="<?=$citys?>">
+<input type="hidden" name="areas" value="<?=$areas?>">
+<input type="hidden" name="dongs" value="<?=$dongs?>">
+<input type="hidden" name="gubun" value="<?=$gubun?>">
+</form>
+	<main id="mainContainer">
+		
+			<p class="brand_title">
+				네비게이션
+			</p>
+
+			<div class="share_pro_div" style="display:none;">
+										
+
+					<a class="facebook" data-toggle='sns_share2' data-service='facebook' data-title="네비게이션">facebook</a>
+					
+					<a class="twitter" data-toggle='sns_share2' data-service='twitter' data-title="네비게이션">twitter</a>
+
+					<a class="naver" data-toggle='sns_share2' data-service='naver' data-title="네비게이션">naver</a>
+
+					<a class="kakaostory" data-toggle='sns_share2' data-service='kakaostory' data-title="네비게이션">kakaostory</a>
+
+					<a class="band" data-toggle='sns_share2' data-service='band' data-title="네비게이션">band</a>
+					
+					<span class="share_pro_div_close">
+						X
+					</span>
+				
+			</div>
+			
+			
+
+			<section id="Navigation">
+			
+			
+				
+				<!-- 메인 검색 -->
+				<div class="main_search">
+					<div class="f0 search_bar">
+						<span class="input_clear_btn input_clear_btn_hidden">검색어지우기</span>
+						<input type="button" class="search_bar_button schrightBtn" value="검색">
+						<input type="text" placeholder="업체명 또는 지역명을 입력해 주세요." name="search_bar_button" class="search_bar_input navit" value="<?=$navit?>">
+					</div>
+				</div>
+				
+				<div class="inner">
+				
+					<div class="navigation_map">
+						<div id="map">
+						
+						
+							<!-- 지도 영역-->
+						
+						
+						
+						</div>						
+					</div>
+
+					<div class="map_search">
+						<div class="map_search_inner">
+						
+							<div class="m_s_Top">
+								<h3>
+									네비게이션 검색
+								</h3>
+							</div>
+							
+							
+							
+						<!-- ////////////////////////// ↓ 1. 검색 //////////////////////////////  -->
+							<div class="map_search_box" style="<?=(count($list['navi_no']) > 0)?"display:none;":""?>">
+							
+								<div class="map_sub_title">
+									<p class="map_sub_title_p01">
+										업종 선택
+									</p>
+									
+									<p class="map_sub_title_p02">
+										찾으시고자 하는 업종을 선택해 주세요.
+									</p>
+								</div><!-- map_sub_title end -->
+								
+								<div class="map_select_div">
+									<select class="sub_select map_sub_select" name="filters">
+										<option value="">
+										전체
+										</option>
+										<?=F_get_option("SELECT option_no, title FROM filter_option WHERE gubun='G' ORDER BY title ASC",$filter)?>
+									</select>
+								</div><!-- map_select_div end -->
+								
+								
+								<div class="map_sub_title">
+									<p class="map_sub_title_p01">
+										지역 선택
+									</p>
+									
+									<p class="map_sub_title_p02">
+										찾으시고자 하는 지역을 선택해 주세요.
+									</p>
+									
+								</div><!-- map_sub_title end -->
+								
+								<!-- 시/도 -->
+								<div class="area_div">
+									<div class="area_top_text">
+										<p>
+											1. 시/도 선택
+										</p>
+									</div>
+									
+									<div class="area_list cityList clearfix">
+										
+										
+										<!-- 선택했을때 나타나는 div -->
+										<div class="area_selection" style="<?=($cityData['city_no'] == '')?"display:none;":""?>">
+											
+											<p>
+												<?=$cityData['name']?>
+											</p>
+											
+											<div class="button_div cityRestBtn">
+												<a>
+													재검색
+												</a>
+											</div>
+										</div>
+											
+											
+											
+										
+										<ul class="cityBox">
+<?
+$city  = $db->get_list("SELECT * FROM city WHERE 1");
+
+for($i=0;$i<count($city['city_no']);$i++){
+?>
+											<li><a class="area_a cityBtn" data-no="<?=$city['city_no'][$i]?>"><?=$city["name"][$i]?></a></li>
+<? } ?>
+										</ul>
+									</div>
+								</div><!-- area_div end -->
+								
+								<!-- 시/도 -->
+								<div class="area_div">
+									<div class="area_top_text">
+										<p>
+											2. 시/군/구 선택
+										</p>
+									</div>
+									
+									<div class="area_list areaList clearfix" style="<?=($areaData['area_no'] == '')?"display:none;":""?>">
+										
+										
+										<!-- 선택했을때 나타나는 div -->
+										<div class="area_selection" style="<?=($areaData['area_no'] == '')?"display:none;":""?>">
+											
+											<p>
+												<?=$areaData['name']?>
+											</p>
+											
+											<div class="button_div areaRestBtn">
+												<a>
+													재검색
+												</a>
+											</div>
+										</div>
+											
+											
+											
+											
+										<ul  class="areaBox">
+										<?=$areaHtml?>
+										</ul>
+									</div>
+								</div><!-- area_div end -->
+								
+								<!-- 시/군/구 선택 -->
+								<div class="area_div">
+									<div class="area_top_text">
+										<p>
+											3. 동/읍/면 선택
+										</p>
+									</div>
+									
+									<div class="area_list dongList clearfix" style="<?=($dongData['dong_no'] == '')?"display:none;":""?>">
+										
+										
+										<!-- 선택했을때 나타나는 div -->
+										<div class="area_selection" style="<?=($dongData['dong_no'] == '')?"display:none;":""?>">
+											
+											<p>
+												<?=$dongData['name']?>
+											</p>
+											
+											<div class="button_div dongRestBtn">
+												<a>
+													재검색
+												</a>
+											</div>
+										</div>
+											
+										<ul class="dongBox"><?=$dongHtml?>
+										</ul>
+									</div>
+								</div><!-- area_div end -->
+								
+								<!-- 검색하기 버튼 -->
+								<div class="area_search_btn">
+									<input type="button" class="schLeftBtn" value="검색하기" />
+								</div><!-- area_search_btn end -->
+						
+						
+							</div><!-- map_search_box end -->
+						
+						<!-- ////////////////////////// ↓ 2. 검색결과 //////////////////////////////  -->
+						
+						
+							<div class="map_search_result" style="<?=(count($list['navi_no']) <= 0)?"display:none;":""?>">
+								
+								<div class="m_result_top">
+								
+									<p>
+										검색결과
+									</p>
+								
+									<span class="result_count">
+										<?=count($list['navi_no'])?>건
+									</span>
+									
+									<button class="reset_btn result_reset_btn resetBtn" type="button">
+										<span class="reset_btn_icon"></span><span>초기화</span>
+									</button>
+									
+									
+								</div>
+								
+								<div class="result_list_div">
+								
+								
+									
+								</div><!-- result_list_div end -->
+							
+							</div><!--  map_search_result end -->
+							
+						
+						</div><!-- map_search_inner end -->
+
+					</div><!-- map_search end -->
+				
+				</div><!-- inner end -->
+				
+				
+			<!-- 맵 포인트 정보 -->
+			<!-- map_point_info end -->
+				
+				
+				
+				
+			
+			</section><!-- Navigation end -->
+
+			
+			
+			
+
+
+			
+			
+	</main><!-- main end -->
+<script language="javascript">
+var lat1 = 37.3595704;
+var lng1 = 127.105399;
+var addr_left = "<?=$addr_left?>";
+var searchChk = false;
+var markers = [],
+	infoWindows = [];
+
+var map = '';
+var infoObj = '';
+
+<? if($list['csy_y'][0] != '' && $list['csy_x'][0] != '' && $gubun == 'top'){ ?>
+	lat1 = "<?=$list['csy_y'][0]?>";
+	lng1 = "<?=$list['csy_x'][0]?>";
+	searchChk = true;
+<? } ?>
+function mapShowFun(lat1, lng1, data){
+	var HOME_PATH = window.HOME_PATH || '.';
+	var MARKER_SPRITE_POSITION = data;
+
+	map = new naver.maps.Map('map', {
+		center: new naver.maps.LatLng(lat1, lng1),
+		zoom: 10, //지도의 초기 줌 레벨
+        minZoom: 1, //지도의 최소 줌 레벨
+        zoomControl: true, //줌 컨트롤의 표시 여부
+        zoomControlOptions: { //줌 컨트롤의 옵션
+            position: naver.maps.Position.TOP_RIGHT
+        }
+	});
+
+	map.setOptions({ //모든 지도 컨트롤 보이기
+		scaleControl: true,
+		logoControl: true,
+		mapDataControl: true,
+		zoomControl: true,
+		mapTypeControl: true
+	});
+
+	var bounds = map.getBounds(),
+		southWest = bounds.getSW(),
+		northEast = bounds.getNE(),
+		lngSpan = northEast.lng() - southWest.lng(),
+		latSpan = northEast.lat() - southWest.lat();
+
+	/*var markers = [],
+		infoWindows = [];*/
+
+	var i = 0;
+
+	$(".result_list_div").html("");
+	for (var key in MARKER_SPRITE_POSITION) {
+		for (var key2 in MARKER_SPRITE_POSITION[key]) {
+			var position = new naver.maps.LatLng(
+				MARKER_SPRITE_POSITION[key][key2][1],
+				MARKER_SPRITE_POSITION[key][key2][0]);
+
+			var marker = new naver.maps.Marker({
+				map: map,
+				position: position,
+				title: key2,
+			   /*icon: {
+					url: 'http://i.gzcdn.net/images/v3/shop/ico_location_visionplus.png',
+					size: new naver.maps.Size(24, 37),
+					anchor: new naver.maps.Point(12, 37),
+					origin: new naver.maps.Point(MARKER_SPRITE_POSITION[key][0], MARKER_SPRITE_POSITION[key][1])
+				},*/
+				zIndex: 100
+			});
+
+			marker.set('seq', i);
+
+			var contentString = [
+				MARKER_SPRITE_POSITION[key][key2][2]
+			].join('');
+
+			$(".result_list_div").append(MARKER_SPRITE_POSITION[key][key2][3]);
+
+			var infoWindow = new naver.maps.InfoWindow({
+				content: contentString,
+				maxWidth: 345,
+				//backgroundColor: "#eee",
+				//borderColo  r: "#2db400",
+				//borderWidth: 5,
+				anchorSize: new naver.maps.Size(30, 30),
+				anchorSkew: true,
+				anchorColor: "#eee",
+				pixelOffset: new naver.maps.Point(20, -20)
+			});
+
+			markers.push(marker);
+			infoWindows.push(infoWindow);
+
+			marker.addListener('mouseover', onMouseOver);
+			marker.addListener('mouseout', onMouseOut);
+
+			i++;
+		}
+	};
+
+	naver.maps.Event.addListener(map, 'idle', function() {
+		updateMarkers(map, markers);
+	});
+
+	for (var i=0, ii=markers.length; i<ii; i++) {
+		naver.maps.Event.addListener(markers[i], 'click', getClickHandler(map , markers , infoWindows , i));
+	}
+
+}
+
+function updateMarkers(map, markers) {
+
+		var mapBounds = map.getBounds();
+		var marker, position;
+
+		for (var i = 0; i < markers.length; i++) {
+
+			marker = markers[i]
+			position = marker.getPosition();
+
+			if (mapBounds.hasLatLng(position)) {
+				showMarker(map, marker);
+			} else {
+				hideMarker(map, marker); 
+			}
+		}
+}
+
+function showMarker(map, marker) {
+
+    if (marker.setMap()) return;
+    marker.setMap(map);
+}
+
+function hideMarker(map, marker) {
+
+    if (!marker.setMap()) return;
+    marker.setMap(null);
+}
+
+// 해당 마커의 인덱스를 seq라는 클로저 변수로 저장하는 이벤트 핸들러를 반환합니다.
+function getClickHandler(map , markers, infoWindows, seq) {
+    return function(e) {
+        var marker = markers[seq],
+            infoWindow = infoWindows[seq];
+
+        if (infoWindow.getMap()) {
+			infoObj = '';
+            infoWindow.close();
+        } else {
+			infoObj = infoWindow;
+            infoWindow.open(map, marker);
+        }
+    }
+}
+
+function loadPost() {
+	if (!!navigator.geolocation){
+		navigator.geolocation.getCurrentPosition(successCallback,errorCallback);  
+	}else{
+		alert("이 브라우저는 Geolocation를 지원하지 않습니다");
+	}
+}    
+
+function errorCallback(error){
+	alert(error.message);
+}    
+
+function successCallback(position){ 
+	if(!searchChk){
+		lat1 = position.coords.latitude;
+		lng1 = position.coords.longitude;
+	}
+
+	var navit = $('[name="navit"]').val();
+	var filter = $('[name="filter"]').val();
+	var citys = $('[name="citys"]').val();
+	var areas = $('[name="areas"]').val();
+	var dongs = $('[name="dongs"]').val();
+	var gubun = $('[name="gubun"]').val();
+
+	$.post("./info.php",{
+		mode : "read_list",
+		navit : navit,
+		filter : filter,
+		citys : citys,
+		areas : areas,
+		dongs : dongs,
+		lat1 : lat1,
+		lng1 : lng1,
+		gubun : gubun
+	},function(e){
+		mapShowFun(lat1, lng1, e);
+	},"json");
+	
+}
+
+if(addr_left != ''){
+	//주소->좌표검색
+	naver.maps.Service.geocode({
+		address: addr_left
+	}, function(status, response) {
+		if (status !== naver.maps.Service.Status.OK) {
+			return alert('사업장 주소가 정확하지 않습니다.');
+		}
+
+		var result = response.result, // 검색 결과의 컨테이너
+			items = result.items; // 검색 결과의 배열
+
+		lat1 = response.v2.addresses[0].y;
+		lng1 = response.v2.addresses[0].x;
+
+		var navit = $('[name="navit"]').val();
+		var filter = $('[name="filter"]').val();
+		var citys = $('[name="citys"]').val();
+		var areas = $('[name="areas"]').val();
+		var dongs = $('[name="dongs"]').val();
+		var gubun = $('[name="gubun"]').val();
+
+		$.post("./info.php",{
+			mode : "read_list",
+			navit : navit,
+			filter : filter,
+			citys : citys,
+			areas : areas,
+			dongs : dongs,
+			lat1 : lat1,
+			lng1 : lng1,
+			gubun : gubun
+		},function(e){
+			mapShowFun(lat1, lng1, e);
+		},"json");
+
+	});
+}else{
+	loadPost();
+}
+
+function closeBtn(){
+	var infoWindow = infoObj;
+	infoObj = '';
+	infoWindow.close();
+}
+
+function onMouseOver(e) {
+	if($(".m_point_close").length > 0){
+		return false;
+	}
+
+    var marker = e.overlay,
+        seq = marker.get('seq');
+	
+	var data = marker.getTitle();
+	var left = parseInt($('[name="'+marker._nmarker_id+'"]').parent().css("left"));
+	var top = parseInt($('[name="'+marker._nmarker_id+'"]').parent().css("top"));
+	var width = parseInt($('[name="'+marker._nmarker_id+'"]').parent().css("width"));
+	var height = parseInt($('[name="'+marker._nmarker_id+'"]').parent().css("height"));
+
+	var lefts = left + width - 10;
+	var tops = top + height;
+	var html = '<div class="map_point_text" style="position:absolute;left:'+lefts+'px;top:'+tops+'px;z-index:100;"><p>'+data+'</p></div>';
+	$('[name="'+marker._nmarker_id+'"]').parent().parent().append(html);
+
+}
+
+function onMouseOut(e) {
+    /*var marker = e.overlay,
+        seq = marker.get('seq');*/
+
+	$(".map_point_text").remove();
+}
+
+function has_maker(e , x , y){
+	var marker = markers[e];
+	var infoWindow = infoWindows[e];
+
+	map.setZoom(10, true);
+	map.setCenter(new naver.maps.LatLng(y, x));
+
+	infoObj = infoWindow;
+	infoWindow.open(map, marker);
+}
+
+function printBtn(x, y, no){
+	window.open("./print.html?x="+x+"&y="+y+"&navi_no="+no,"프린트","width=562px,height=800px,top=0,left=0,toolbar=no");
+}
+
+function shareBtn(x , y){
+	$(".share_pro_div").show();
+}
+
+</script>
+	
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/foot.html";
+?>

@@ -1,0 +1,688 @@
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/meta.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/header.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/story-sub_nav.html";
+?>
+<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=83bfuniegk&amp;submodules=panorama,geocoder,drawing,visualization"></script>
+<!-- navigation css -->
+<link rel="stylesheet" type="text/css" href="/css/navigation.css">
+	<main id="mainContainer">
+		
+			<p class="brand_title">
+				네비게이션
+			</p>
+			
+			
+
+			<section id="Navigation">
+			
+			
+				
+				<!-- 메인 검색 -->
+				<div class="main_search">
+					<div class="f0 search_bar">
+						<span class="input_clear_btn input_clear_btn_hidden">검색어지우기</span>
+						<input type="button" class="search_bar_button" value="검색">
+						<input type="text" placeholder="업체명 또는 지역명을 입력해 주세요." name="search_bar_button" class="search_bar_input" value="">
+					</div>
+				</div>
+				
+				<div class="inner">
+				
+					<div class="navigation_map">
+						<div id="map">
+						
+						
+							<!-- 지도 영역-->
+						
+						
+						
+						</div>						
+					</div>
+
+					<div class="map_search">
+						<div class="map_search_inner">
+						
+							<div class="m_s_Top">
+								<h3>
+									네비게이션 검색
+								</h3>
+							</div>
+							
+							
+							
+						<!-- ////////////////////////// ↓ 1. 검색 //////////////////////////////  -->
+							<div class="map_search_box">
+							
+								<div class="map_sub_title">
+									<p class="map_sub_title_p01">
+										업종 선택
+									</p>
+									
+									<p class="map_sub_title_p02">
+										찾으시고자 하는 업종을 선택해 주세요.
+									</p>
+								</div><!-- map_sub_title end -->
+								
+								<div class="map_select_div">
+									<select class="sub_select map_sub_select" name="">
+										<option value="">
+										전체
+										</option>
+										<option value="">업종1</option>
+										<option value="">업종2</option>
+									</select>
+								</div><!-- map_select_div end -->
+								
+								
+								<div class="map_sub_title">
+									<p class="map_sub_title_p01">
+										지역 선택
+									</p>
+									
+									<p class="map_sub_title_p02">
+										찾으시고자 하는 지역을 선택해 주세요.
+									</p>
+									
+								</div><!-- map_sub_title end -->
+								
+								<!-- 시/도 -->
+								<div class="area_div">
+									<div class="area_top_text">
+										<p>
+											1. 시/도 선택
+										</p>
+									</div>
+									
+									<div class="area_list">
+										
+										
+										<!-- 선택했을때 나타나는 div -->
+										<div class="area_selection">
+											
+											<p>
+												서울
+											</p>
+											
+											<div class="button_div">
+												<a>
+													재검색
+												</a>
+											</div>
+										</div>
+											
+											
+											
+										
+										<ul>
+											<li><a class="area_a">강원</a></li>
+											<li><a class="area_a">경기</a></li>
+											<li><a class="area_a">경남</a></li>
+											<li><a class="area_a">경북</a></li>
+											<li><a class="area_a">광주</a></li>
+											<li><a class="area_a">대구</a></li>
+											<li><a class="area_a">대전</a></li>
+											<li><a class="area_a">부산</a></li>
+											<li><a class="area_a">부산광역시</a></li>
+											<li><a class="area_a">서울</a></li>
+											<li><a class="area_a">세종특별자치시</a></li>
+											<li><a class="area_a">울산</a></li>
+											<li><a class="area_a">인천</a></li>
+											<li><a class="area_a">전남</a></li>
+											<li><a class="area_a">전북</a></li>
+											<li><a class="area_a">제주특별자치도</a></li>
+											<li><a class="area_a">충남</a></li>
+											<li><a class="area_a">충북</a></li>
+										</ul>
+									</div>
+								</div><!-- area_div end -->
+								
+								<!-- 시/도 -->
+								<div class="area_div">
+									<div class="area_top_text">
+										<p>
+											2. 시/군/구 선택
+										</p>
+									</div>
+									
+									<div class="area_list">
+										
+										
+										<!-- 선택했을때 나타나는 div -->
+										<div class="area_selection">
+											
+											<p>
+												강서구
+											</p>
+											
+											<div class="button_div">
+												<a>
+													재검색
+												</a>
+											</div>
+										</div>
+											
+											
+											
+											
+										<ul>
+											<li><a class="area_a">강서구(23)</a></li>
+											<li><a class="area_a">금정구(34)</a></li>
+											<li><a class="area_a">기장군(24)</a></li>
+											<li><a class="area_a">남구(22)</a></li>
+											<li><a class="area_a">동구(8)</a></li>
+											<li><a class="area_a">동래구(37)</a></li>
+											<li><a class="area_a">부산진구(42)</a></li>
+											<li><a class="area_a">북구(22)</a></li>
+											<li><a class="area_a">사상구(34)</a></li>
+											<li><a class="area_a">사하구(37)</a></li>
+											<li><a class="area_a">서구(11)</a></li>
+											<li><a class="area_a">수영구(27)</a></li>
+											<li><a class="area_a">연제구(27)</a></li>
+											<li><a class="area_a">영도구(6)</a></li>
+											<li><a class="area_a">중구(8)</a></li>
+											<li><a class="area_a">해운대구(50)</a></li>
+										</ul>
+									</div>
+								</div><!-- area_div end -->
+								
+								<!-- 시/군/구 선택 -->
+								<div class="area_div">
+									<div class="area_top_text">
+										<p>
+											3. 동/읍/면 선택
+										</p>
+									</div>
+									
+									<div class="area_list">
+										
+										
+										<!-- 선택했을때 나타나는 div -->
+										<div class="area_selection">
+											
+											<p>
+												공릉동
+											</p>
+											
+											<div class="button_div">
+												<a>
+													재검색
+												</a>
+											</div>
+										</div>
+											
+											
+											
+										
+										<ul>
+											<li><a class="area_a">공릉동(10)</a></li>
+											<li><a class="area_a">상계동(19)</a></li>
+											<li><a class="area_a">월계동(3)</a></li>
+											<li><a class="area_a">중계동(14)</a></li>
+											<li><a class="area_a">하계동(5)</a></li>
+										</ul>
+									</div>
+								</div><!-- area_div end -->
+								
+								<!-- 검색하기 버튼 -->
+								<div class="area_search_btn">
+									<input type="button" value="검색하기" />
+								</div><!-- area_search_btn end -->
+						
+						
+						</div><!-- map_search_box end -->
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						<!-- 확인 후 삭제 ↓↓↓↓ -->
+						<br><br>
+						<span style="text-align: center; display: block; width: 100%; border-top: 1px solid #000;border-bottom: 1px solid #000;">아래부턴 검색 결과</span>
+						<br><br>
+						<!-- 확인 후 삭제 ↑↑↑↑ -->
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						<!-- ////////////////////////// ↓ 2. 검색결과 //////////////////////////////  -->
+						
+						
+							<div class="map_search_result">
+								
+								<div class="m_result_top">
+								
+									<p>
+										검색결과
+									</p>
+								
+									<span class="result_count">
+										5건
+									</span>
+									
+									<button class="reset_btn result_reset_btn" type="button">
+										<span class="reset_btn_icon"></span><span>초기화</span>
+									</button>
+									
+									
+								</div>
+								
+								<div class="result_list_div">
+								
+
+									<!-- 반복 -->
+									<div class="result_list">
+										<ul>
+											<li>
+												<span class="result_title">
+												몽플러스 동물병원
+												</span>
+											</li>
+											<li>
+												<span>
+													경기도 용인시 기흥구 영덕동 1-1
+												</span>
+											</li>
+											<li>
+												<span>
+													031-123-4567
+												</span>l 동물병원
+												<span>
+													l
+												</span>
+												<span>
+													동물병원
+												</span>
+											</li>
+										</ul>									
+									</div><!-- result_list end -->
+
+									<!-- 반복 -->
+									<div class="result_list">
+										<ul>
+											<li>
+												<span class="result_title">
+												몽플러스 동물병원
+												</span>
+											</li>
+											<li>
+												<span>
+													경기도 용인시 기흥구 영덕동 1-1
+												</span>
+											</li>
+											<li>
+												<span>
+													031-123-4567
+												</span>l 동물병원
+												<span>
+													l
+												</span>
+												<span>
+													동물병원
+												</span>
+											</li>
+										</ul>									
+									</div><!-- result_list end -->
+
+									<!-- 반복 -->
+									<div class="result_list">
+										<ul>
+											<li>
+												<span class="result_title">
+												몽플러스 동물병원
+												</span>
+											</li>
+											<li>
+												<span>
+													경기도 용인시 기흥구 영덕동 1-1
+												</span>
+											</li>
+											<li>
+												<span>
+													031-123-4567
+												</span>l 동물병원
+												<span>
+													l
+												</span>
+												<span>
+													동물병원
+												</span>
+											</li>
+										</ul>									
+									</div><!-- result_list end -->
+
+									<!-- 반복 -->
+									<div class="result_list">
+										<ul>
+											<li>
+												<span class="result_title">
+												몽플러스 동물병원
+												</span>
+											</li>
+											<li>
+												<span>
+													경기도 용인시 기흥구 영덕동 1-1
+												</span>
+											</li>
+											<li>
+												<span>
+													031-123-4567
+												</span>l 동물병원
+												<span>
+													l
+												</span>
+												<span>
+													동물병원
+												</span>
+											</li>
+										</ul>									
+									</div><!-- result_list end -->
+
+									<!-- 반복 -->
+									<div class="result_list">
+										<ul>
+											<li>
+												<span class="result_title">
+												몽플러스 동물병원
+												</span>
+											</li>
+											<li>
+												<span>
+													경기도 용인시 기흥구 영덕동 1-1
+												</span>
+											</li>
+											<li>
+												<span>
+													031-123-4567
+												</span>l 동물병원
+												<span>
+													l
+												</span>
+												<span>
+													동물병원
+												</span>
+											</li>
+										</ul>									
+									</div><!-- result_list end -->
+
+									<!-- 반복 -->
+									<div class="result_list">
+										<ul>
+											<li>
+												<span class="result_title">
+												몽플러스 동물병원
+												</span>
+											</li>
+											<li>
+												<span>
+													경기도 용인시 기흥구 영덕동 1-1
+												</span>
+											</li>
+											<li>
+												<span>
+													031-123-4567
+												</span>l 동물병원
+												<span>
+													l
+												</span>
+												<span>
+													동물병원
+												</span>
+											</li>
+										</ul>									
+									</div><!-- result_list end -->
+
+									<!-- 반복 -->
+									<div class="result_list">
+										<ul>
+											<li>
+												<span class="result_title">
+												몽플러스 동물병원
+												</span>
+											</li>
+											<li>
+												<span>
+													경기도 용인시 기흥구 영덕동 1-1
+												</span>
+											</li>
+											<li>
+												<span>
+													031-123-4567
+												</span>l 동물병원
+												<span>
+													l
+												</span>
+												<span>
+													동물병원
+												</span>
+											</li>
+										</ul>									
+									</div><!-- result_list end -->
+									
+									
+								</div><!-- result_list_div end -->
+							
+							</div><!--  map_search_result end -->
+							
+						
+						</div><!-- map_search_inner end -->
+
+					</div><!-- map_search end -->
+				
+				</div><!-- inner end -->
+				
+				
+
+			
+			<!-- 마우스 호버시 텍스트 -->
+			<div class="map_point_text">
+				<p>
+				몽플러스 동물병원
+				</p>
+			</div><!-- map_point_text end -->
+				
+				
+			<!-- 맵 포인트 정보 -->
+			<!-- map_point_info end -->
+				
+				
+				
+				
+			
+			</section><!-- Navigation end -->
+
+			
+			
+			
+
+
+			
+			
+	</main><!-- main end -->
+<script language="javascript">
+function closeBtn(){
+	$(".map_point_info").parent().parent().parent().remove();
+}
+
+
+var HOME_PATH = window.HOME_PATH || '.';
+var MARKER_SPRITE_X_OFFSET = 29,
+    MARKER_SPRITE_Y_OFFSET = 50,
+    MARKER_SPRITE_POSITION = {
+        "A0": [0, 0],
+        "B0": [MARKER_SPRITE_X_OFFSET, 0],
+        "C0": [MARKER_SPRITE_X_OFFSET*2, 0],
+        "D0": [MARKER_SPRITE_X_OFFSET*3, 0],
+        "E0": [MARKER_SPRITE_X_OFFSET*4, 0],
+        "F0": [MARKER_SPRITE_X_OFFSET*5, 0],
+        "G0": [MARKER_SPRITE_X_OFFSET*6, 0],
+        "H0": [MARKER_SPRITE_X_OFFSET*7, 0],
+        "I0": [MARKER_SPRITE_X_OFFSET*8, 0],
+
+        "A1": [0, MARKER_SPRITE_Y_OFFSET],
+        "B1": [MARKER_SPRITE_X_OFFSET, MARKER_SPRITE_Y_OFFSET],
+        "C1": [MARKER_SPRITE_X_OFFSET*2, MARKER_SPRITE_Y_OFFSET],
+        "D1": [MARKER_SPRITE_X_OFFSET*3, MARKER_SPRITE_Y_OFFSET],
+        "E1": [MARKER_SPRITE_X_OFFSET*4, MARKER_SPRITE_Y_OFFSET],
+        "F1": [MARKER_SPRITE_X_OFFSET*5, MARKER_SPRITE_Y_OFFSET],
+        "G1": [MARKER_SPRITE_X_OFFSET*6, MARKER_SPRITE_Y_OFFSET],
+        "H1": [MARKER_SPRITE_X_OFFSET*7, MARKER_SPRITE_Y_OFFSET],
+        "I1": [MARKER_SPRITE_X_OFFSET*8, MARKER_SPRITE_Y_OFFSET],
+
+        "A2": [0, MARKER_SPRITE_Y_OFFSET*2],
+        "B2": [MARKER_SPRITE_X_OFFSET, MARKER_SPRITE_Y_OFFSET*2],
+        "C2": [MARKER_SPRITE_X_OFFSET*2, MARKER_SPRITE_Y_OFFSET*2],
+        "D2": [MARKER_SPRITE_X_OFFSET*3, MARKER_SPRITE_Y_OFFSET*2],
+        "E2": [MARKER_SPRITE_X_OFFSET*4, MARKER_SPRITE_Y_OFFSET*2],
+        "F2": [MARKER_SPRITE_X_OFFSET*5, MARKER_SPRITE_Y_OFFSET*2],
+        "G2": [MARKER_SPRITE_X_OFFSET*6, MARKER_SPRITE_Y_OFFSET*2],
+        "H2": [MARKER_SPRITE_X_OFFSET*7, MARKER_SPRITE_Y_OFFSET*2],
+        "I2": [MARKER_SPRITE_X_OFFSET*8, MARKER_SPRITE_Y_OFFSET*2]
+    };
+
+var map = new naver.maps.Map('map', {
+    center: new naver.maps.LatLng(37.3595704, 127.105399),
+    zoom: 10
+});
+
+var bounds = map.getBounds(),
+    southWest = bounds.getSW(),
+    northEast = bounds.getNE(),
+    lngSpan = northEast.lng() - southWest.lng(),
+    latSpan = northEast.lat() - southWest.lat();
+
+var markers = [],
+    infoWindows = [];
+
+for (var key in MARKER_SPRITE_POSITION) {
+
+    var position = new naver.maps.LatLng(
+        southWest.lat() + latSpan * Math.random(),
+        southWest.lng() + lngSpan * Math.random());
+
+    var marker = new naver.maps.Marker({
+        map: map,
+        position: position,
+        title: key,
+       /*icon: {
+            url: 'http://i.gzcdn.net/images/v3/shop/ico_location_visionplus.png',
+            size: new naver.maps.Size(24, 37),
+            anchor: new naver.maps.Point(12, 37),
+            origin: new naver.maps.Point(MARKER_SPRITE_POSITION[key][0], MARKER_SPRITE_POSITION[key][1])
+        },*/
+        zIndex: 100
+    });
+
+	var contentString = [
+        '<div class="map_point_info">',
+		'	<div class="m_point_name">',
+		'		<h3>몽플러스 동물병원</h3>',
+		'		<a class="m_point_close" onclick="closeBtn()">닫기</a>',
+		'	</div>',
+		'	<div class="m_point_info_box">',
+		'		<div class="m_point_info_box_inner">',
+		'			<p><!-- 업종 -->동물병원</p>',
+		'			<p><!-- 도로명 주소 -->경기도 용인시 중부대로 242-1</p>',
+		'			<p class="address2"><!-- 지번 주소(구) -->지번 l 경기도 용인시 기흥구 영덕동 1-1</p>',
+		'			<p><!-- 연락처  -->031-1023-4567</p>',
+		'			<a target="_blank" href="">www.mongplus.com</a>',
+		'		</div>',
+		'	</div>',
+		'	<div class="m_point_btns">',
+		'		<a class="m_p_print_btn" alt="프린트(출력)" title="프린트(출력)">프린트(출력)</a>',
+		'		<a class="m_p_share_btn" alt="공유하기" title="공유하기">공유하기</a>',
+		'	</div>',
+		'</div>'
+    ].join('');
+
+	var infoWindow = new naver.maps.InfoWindow({
+        content: contentString,
+		maxWidth: 345,
+		//backgroundColor: "#eee",
+		//borderColor: "#2db400",
+		//borderWidth: 5,
+		anchorSize: new naver.maps.Size(30, 30),
+		anchorSkew: true,
+		anchorColor: "#eee",
+		pixelOffset: new naver.maps.Point(20, -20)
+    });
+
+    markers.push(marker);
+    infoWindows.push(infoWindow);
+};
+
+naver.maps.Event.addListener(map, 'idle', function() {
+    updateMarkers(map, markers);
+});
+
+function updateMarkers(map, markers) {
+
+    var mapBounds = map.getBounds();
+    var marker, position;
+
+    for (var i = 0; i < markers.length; i++) {
+
+        marker = markers[i]
+        position = marker.getPosition();
+
+        if (mapBounds.hasLatLng(position)) {
+            showMarker(map, marker);
+        } else {
+            hideMarker(map, marker);
+        }
+    }
+}
+
+function showMarker(map, marker) {
+
+    if (marker.setMap()) return;
+    marker.setMap(map);
+}
+
+function hideMarker(map, marker) {
+
+    if (!marker.setMap()) return;
+    marker.setMap(null);
+}
+
+// 해당 마커의 인덱스를 seq라는 클로저 변수로 저장하는 이벤트 핸들러를 반환합니다.
+function getClickHandler(seq) {
+    return function(e) {
+        var marker = markers[seq],
+            infoWindow = infoWindows[seq];
+
+        if (infoWindow.getMap()) {
+            infoWindow.close();
+        } else {
+            infoWindow.open(map, marker);
+        }
+    }
+}
+
+for (var i=0, ii=markers.length; i<ii; i++) {
+    naver.maps.Event.addListener(markers[i], 'click', getClickHandler(i));
+}
+</script>
+	
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/foot.html";
+?>

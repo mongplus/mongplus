@@ -1,0 +1,580 @@
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/meta.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/header.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/story-sub_nav.html";
+?>
+
+<!-- navigation css -->
+<link rel="stylesheet" type="text/css" href="/css/navigation.css">
+	<main id="mainContainer">
+		
+			<p class="brand_title">
+				네비게이션
+			</p>
+			
+			
+
+			<section id="Navigation">
+			
+			
+				
+				<!-- 메인 검색 -->
+				<div class="main_search">
+					<div class="f0 search_bar">
+						<span class="input_clear_btn input_clear_btn_hidden">검색어지우기</span>
+						<input type="button" class="search_bar_button" value="검색">
+						<input type="text" placeholder="업체명 또는 지역명을 입력해 주세요." name="search_bar_button" class="search_bar_input" value="">
+					</div>
+				</div>
+				
+				<div class="inner">
+				
+					<div class="navigation_map">
+						<div>
+						
+						
+							<!-- 지도 영역-->
+						
+						
+						
+						</div>						
+					</div>
+
+					<div class="map_search">
+						<div class="map_search_inner">
+						
+							<div class="m_s_Top">
+								<h3>
+									네비게이션 검색
+								</h3>
+							</div>
+							
+							
+							
+						<!-- ////////////////////////// ↓ 1. 검색 //////////////////////////////  -->
+							<div class="map_search_box">
+							
+								<div class="map_sub_title">
+									<p class="map_sub_title_p01">
+										업종 선택
+									</p>
+									
+									<p class="map_sub_title_p02">
+										찾으시고자 하는 업종을 선택해 주세요.
+									</p>
+								</div><!-- map_sub_title end -->
+								
+								<div class="map_select_div">
+									<select class="sub_select map_sub_select" name="">
+										<option value="">
+										전체
+										</option>
+										<option value="">업종1</option>
+										<option value="">업종2</option>
+									</select>
+								</div><!-- map_select_div end -->
+								
+								
+								<div class="map_sub_title">
+									<p class="map_sub_title_p01">
+										지역 선택
+									</p>
+									
+									<p class="map_sub_title_p02">
+										찾으시고자 하는 지역을 선택해 주세요.
+									</p>
+									
+								</div><!-- map_sub_title end -->
+								
+								<!-- 시/도 -->
+								<div class="area_div">
+									<div class="area_top_text">
+										<p>
+											1. 시/도 선택
+										</p>
+									</div>
+									
+									<div class="area_list">
+										
+										
+										<!-- 선택했을때 나타나는 div -->
+										<div class="area_selection">
+											
+											<p>
+												서울
+											</p>
+											
+											<div class="button_div">
+												<a>
+													재검색
+												</a>
+											</div>
+										</div>
+											
+											
+											
+										
+										<ul>
+											<li><a class="area_a">강원</a></li>
+											<li><a class="area_a">경기</a></li>
+											<li><a class="area_a">경남</a></li>
+											<li><a class="area_a">경북</a></li>
+											<li><a class="area_a">광주</a></li>
+											<li><a class="area_a">대구</a></li>
+											<li><a class="area_a">대전</a></li>
+											<li><a class="area_a">부산</a></li>
+											<li><a class="area_a">부산광역시</a></li>
+											<li><a class="area_a">서울</a></li>
+											<li><a class="area_a">세종특별자치시</a></li>
+											<li><a class="area_a">울산</a></li>
+											<li><a class="area_a">인천</a></li>
+											<li><a class="area_a">전남</a></li>
+											<li><a class="area_a">전북</a></li>
+											<li><a class="area_a">제주특별자치도</a></li>
+											<li><a class="area_a">충남</a></li>
+											<li><a class="area_a">충북</a></li>
+										</ul>
+									</div>
+								</div><!-- area_div end -->
+								
+								<!-- 시/도 -->
+								<div class="area_div">
+									<div class="area_top_text">
+										<p>
+											2. 시/군/구 선택
+										</p>
+									</div>
+									
+									<div class="area_list">
+										
+										
+										<!-- 선택했을때 나타나는 div -->
+										<div class="area_selection">
+											
+											<p>
+												강서구
+											</p>
+											
+											<div class="button_div">
+												<a>
+													재검색
+												</a>
+											</div>
+										</div>
+											
+											
+											
+											
+										<ul>
+											<li><a class="area_a">강서구(23)</a></li>
+											<li><a class="area_a">금정구(34)</a></li>
+											<li><a class="area_a">기장군(24)</a></li>
+											<li><a class="area_a">남구(22)</a></li>
+											<li><a class="area_a">동구(8)</a></li>
+											<li><a class="area_a">동래구(37)</a></li>
+											<li><a class="area_a">부산진구(42)</a></li>
+											<li><a class="area_a">북구(22)</a></li>
+											<li><a class="area_a">사상구(34)</a></li>
+											<li><a class="area_a">사하구(37)</a></li>
+											<li><a class="area_a">서구(11)</a></li>
+											<li><a class="area_a">수영구(27)</a></li>
+											<li><a class="area_a">연제구(27)</a></li>
+											<li><a class="area_a">영도구(6)</a></li>
+											<li><a class="area_a">중구(8)</a></li>
+											<li><a class="area_a">해운대구(50)</a></li>
+										</ul>
+									</div>
+								</div><!-- area_div end -->
+								
+								<!-- 시/군/구 선택 -->
+								<div class="area_div">
+									<div class="area_top_text">
+										<p>
+											3. 동/읍/면 선택
+										</p>
+									</div>
+									
+									<div class="area_list">
+										
+										
+										<!-- 선택했을때 나타나는 div -->
+										<div class="area_selection">
+											
+											<p>
+												공릉동
+											</p>
+											
+											<div class="button_div">
+												<a>
+													재검색
+												</a>
+											</div>
+										</div>
+											
+											
+											
+										
+										<ul>
+											<li><a class="area_a">공릉동(10)</a></li>
+											<li><a class="area_a">상계동(19)</a></li>
+											<li><a class="area_a">월계동(3)</a></li>
+											<li><a class="area_a">중계동(14)</a></li>
+											<li><a class="area_a">하계동(5)</a></li>
+										</ul>
+									</div>
+								</div><!-- area_div end -->
+								
+								<!-- 검색하기 버튼 -->
+								<div class="area_search_btn">
+									<input type="button" value="검색하기" />
+								</div><!-- area_search_btn end -->
+						
+						
+						</div><!-- map_search_box end -->
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						<!-- 확인 후 삭제 ↓↓↓↓ -->
+						<br><br>
+						<span style="text-align: center; display: block; width: 100%; border-top: 1px solid #000;border-bottom: 1px solid #000;">아래부턴 검색 결과</span>
+						<br><br>
+						<!-- 확인 후 삭제 ↑↑↑↑ -->
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						<!-- ////////////////////////// ↓ 2. 검색결과 //////////////////////////////  -->
+						
+						
+							<div class="map_search_result">
+								
+								<div class="m_result_top">
+								
+									<p>
+										검색결과
+									</p>
+								
+									<span class="result_count">
+										5건
+									</span>
+									
+									<button class="reset_btn result_reset_btn" type="button">
+										<span class="reset_btn_icon"></span><span>초기화</span>
+									</button>
+									
+									
+								</div>
+								
+								<div class="result_list_div">
+								
+
+									<!-- 반복 -->
+									<div class="result_list">
+										<ul>
+											<li>
+												<span class="result_title">
+												몽플러스 동물병원
+												</span>
+											</li>
+											<li>
+												<span>
+													경기도 용인시 기흥구 영덕동 1-1
+												</span>
+											</li>
+											<li>
+												<span>
+													031-123-4567
+												</span>l 동물병원
+												<span>
+													l
+												</span>
+												<span>
+													동물병원
+												</span>
+											</li>
+										</ul>									
+									</div><!-- result_list end -->
+
+									<!-- 반복 -->
+									<div class="result_list">
+										<ul>
+											<li>
+												<span class="result_title">
+												몽플러스 동물병원
+												</span>
+											</li>
+											<li>
+												<span>
+													경기도 용인시 기흥구 영덕동 1-1
+												</span>
+											</li>
+											<li>
+												<span>
+													031-123-4567
+												</span>l 동물병원
+												<span>
+													l
+												</span>
+												<span>
+													동물병원
+												</span>
+											</li>
+										</ul>									
+									</div><!-- result_list end -->
+
+									<!-- 반복 -->
+									<div class="result_list">
+										<ul>
+											<li>
+												<span class="result_title">
+												몽플러스 동물병원
+												</span>
+											</li>
+											<li>
+												<span>
+													경기도 용인시 기흥구 영덕동 1-1
+												</span>
+											</li>
+											<li>
+												<span>
+													031-123-4567
+												</span>l 동물병원
+												<span>
+													l
+												</span>
+												<span>
+													동물병원
+												</span>
+											</li>
+										</ul>									
+									</div><!-- result_list end -->
+
+									<!-- 반복 -->
+									<div class="result_list">
+										<ul>
+											<li>
+												<span class="result_title">
+												몽플러스 동물병원
+												</span>
+											</li>
+											<li>
+												<span>
+													경기도 용인시 기흥구 영덕동 1-1
+												</span>
+											</li>
+											<li>
+												<span>
+													031-123-4567
+												</span>l 동물병원
+												<span>
+													l
+												</span>
+												<span>
+													동물병원
+												</span>
+											</li>
+										</ul>									
+									</div><!-- result_list end -->
+
+									<!-- 반복 -->
+									<div class="result_list">
+										<ul>
+											<li>
+												<span class="result_title">
+												몽플러스 동물병원
+												</span>
+											</li>
+											<li>
+												<span>
+													경기도 용인시 기흥구 영덕동 1-1
+												</span>
+											</li>
+											<li>
+												<span>
+													031-123-4567
+												</span>l 동물병원
+												<span>
+													l
+												</span>
+												<span>
+													동물병원
+												</span>
+											</li>
+										</ul>									
+									</div><!-- result_list end -->
+
+									<!-- 반복 -->
+									<div class="result_list">
+										<ul>
+											<li>
+												<span class="result_title">
+												몽플러스 동물병원
+												</span>
+											</li>
+											<li>
+												<span>
+													경기도 용인시 기흥구 영덕동 1-1
+												</span>
+											</li>
+											<li>
+												<span>
+													031-123-4567
+												</span>l 동물병원
+												<span>
+													l
+												</span>
+												<span>
+													동물병원
+												</span>
+											</li>
+										</ul>									
+									</div><!-- result_list end -->
+
+									<!-- 반복 -->
+									<div class="result_list">
+										<ul>
+											<li>
+												<span class="result_title">
+												몽플러스 동물병원
+												</span>
+											</li>
+											<li>
+												<span>
+													경기도 용인시 기흥구 영덕동 1-1
+												</span>
+											</li>
+											<li>
+												<span>
+													031-123-4567
+												</span>l 동물병원
+												<span>
+													l
+												</span>
+												<span>
+													동물병원
+												</span>
+											</li>
+										</ul>									
+									</div><!-- result_list end -->
+									
+									
+								</div><!-- result_list_div end -->
+							
+							</div><!--  map_search_result end -->
+							
+						
+						</div><!-- map_search_inner end -->
+
+					</div><!-- map_search end -->
+				
+				</div><!-- inner end -->
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+			
+			<!-- 마우스 호버시 텍스트 -->
+			<div class="map_point_text">
+				<p>
+				몽플러스 동물병원
+				</p>
+			</div><!-- map_point_text end -->
+				
+				
+			<!-- 맵 포인트 정보 -->
+			<div class="map_point_info">
+				<div class="m_point_name">
+					<h3>
+						몽플러스 동물병원
+					</h3>
+					
+					<a class="m_point_close">
+						닫기
+					</a>
+				</div><!-- m_point_name end -->
+				
+				<div class="m_point_info_box">
+					<div class="m_point_info_box_inner">
+					
+						<p><!-- 업종 -->
+							동물병원
+						</p>
+						
+						<p><!-- 도로명 주소 -->
+							경기도 용인시 중부대로 242-1
+						</p>
+						
+						<p class="address2"><!-- 지번 주소(구) -->
+							지번 l 경기도 용인시 기흥구 영덕동 1-1
+						</p>
+						
+						<p><!-- 연락처  -->
+							031-1023-4567
+						</p>
+						
+						<a target="_blank" href="">
+							www.mongplus.com
+						</a>
+						
+					</div><!-- m_point_info_box_inner end -->
+				</div>
+				
+				<div class="m_point_btns">
+					<a class="m_p_print_btn" alt="프린트(출력)" title="프린트(출력)">
+						프린트(출력)
+					</a>
+					<a class="m_p_share_btn" alt="공유하기" title="공유하기">
+						공유하기
+					</a>
+				</div>
+				
+			</div><!-- map_point_info end -->
+				
+				
+				
+				
+			
+			</section><!-- Navigation end -->
+
+			
+			
+			
+
+
+			
+			
+	</main><!-- main end -->
+	
+	
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/foot.html";
+?>

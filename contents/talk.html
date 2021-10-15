@@ -1,0 +1,910 @@
+<?
+$title1 = "콘텐츠관리";
+$title2 = "";
+$title3 = "톡톡";
+include $_SERVER['DOCUMENT_ROOT']."/admin/inc/meta.html";
+include $_SERVER['DOCUMENT_ROOT']."/admin/inc/header.html";
+include $_SERVER['DOCUMENT_ROOT']."/_library/function_talk.php";
+if (!$page) $page		=	1;
+if (!$limit) $limit		=	20;
+$PARAM			=	"&order=$order&find_text=$find_text&find_object=$find_object&status=$status&day=$day&sDate=$sDate&eDate=$eDate&limit=$limit";
+
+$in			= "";
+$add_query	= "";
+
+if($day != ''){
+	if($day != 'all'){
+		$s_date = date('Y-m-d',strtotime("- ".$day." day"))." 00:00:01";
+		$e_date = date('Y-m-d')." 23:59:59";
+
+		$add_query .= " AND reg_date BETWEEN '".$s_date."' AND '".$e_date."'";
+	}
+}else if($sDate != '' && $eDate != ''){
+	$s_date = $sDate." 00:00:01";
+	$e_date = $eDate." 23:59:59";
+	$add_query .= " AND reg_date BETWEEN '".$s_date."' AND '".$e_date."'";
+}
+
+if($status != '' && $status != 'all'){
+	$add_query .= " AND status='".$status."'";
+}
+
+$list				=	F_talk_list(array(
+							"row"			=>	$limit,
+							"page"			=>	$page,
+							"order"			=>	$order,
+							"find_text"		=>	$find_text,
+							"find_object"	=>	$find_object,
+							"add_query"		=>	$add_query,
+						));
+
+$main_list = $db->get_list("SELECT * FROM talk WHERE is_main = 'Y' ORDER BY is_main_order is NULL, is_main_order = 0, is_main_order ASC");
+?>
+
+
+<script laguage="javascript">
+$(document).ready(function(){
+	//검색
+	$(document).on("click",".searchBtn",function(){
+		var frm = $('[name="s_frm"]');
+
+		$('[name="find_object"]').val($('[name="find_objects"]').val());
+		$('[name="find_text"]').val($('[name="find_texts"]').val());
+		$('[name="status"]').val($('[name="statuss"]:checked').val());
+		$('[name="day"]').val($('.dateDay').find(".active").data("no"));
+		$('[name="sDate"]').val($('[name="searchSDate"]').val());
+		$('[name="eDate"]').val($('[name="searchEDate"]').val());
+		$('[name="order"]').val($('[name="orderBy"]').val());
+		$('[name="limit"]').val($('[name="limited"]').val());
+
+		frm.submit();
+	});
+
+	//출력순,출력개수
+	$(document).on("change",'[name="orderBy"] , [name="limited"]',function(){
+		var frm = $('[name="s_frm"]');
+
+		$('[name="find_object"]').val($('[name="find_objects"]').val());
+		$('[name="find_text"]').val($('[name="find_texts"]').val());
+		$('[name="status"]').val($('[name="statuss"]:checked').val());
+		$('[name="day"]').val($('.dateDay').find(".active").data("no"));
+		$('[name="sDate"]').val($('[name="searchSDate"]').val());
+		$('[name="eDate"]').val($('[name="searchEDate"]').val());
+		$('[name="order"]').val($('[name="orderBy"]').val());
+		$('[name="limit"]').val($('[name="limited"]').val());
+
+		frm.submit();
+	});
+
+	//전체선택
+	$(document).on("click",".allChkBtn",function(){
+		var type = $(this).prop("checked");
+		$('[name="noChk[]"]').prop("checked",type);
+	});
+
+	//선택삭제
+	$(document).on("click",".allDelChk",function(){
+		var chk_no = new Array();
+		var i = 0;
+		var type = $(this).data("type");
+		$('[name="noChk[]"]:checked').each(function(){
+			chk_no[i] = $(this).val();
+			i++;
+		});
+
+		if(i > 0){
+			if(confirm("선택한 항목을 삭제하시겠습니까?")){
+				$.post("./info.php",{
+					mode : "all_talk_del",
+					type : type,
+					chk_no : chk_no
+				},function(e){
+					if(e.error){
+						alert(e.msg);
+					}else{
+						alert(e.msg);
+					}
+					window.location.reload();
+				},"json");
+			}
+		}else{
+			alert("삭제할 항목을 선택하세요");
+		}
+	});
+
+	//일괄 상태변경
+	$(document).on("change",".allupStBtn",function(){
+		var chk_no = new Array();
+		var status = $(this).val();
+		var i = 0;
+		$('[name="noChk[]"]:checked').each(function(){
+			chk_no[i] = $(this).val();
+			i++;
+		});
+
+		if(status == ''){
+			return false;
+		}
+
+		if(i > 0){
+			if(confirm("선택한 항목을 변경하시겠습니까?")){
+				$.post("./info.php",{
+					mode : "all_talk_stat",
+					chk_no : chk_no,
+					status : status
+				},function(e){
+					if(e.error){
+						alert(e.msg);
+					}else{
+						alert(e.msg);
+					}
+					window.location.reload();
+				},"json");
+			}
+		}else{
+			alert("변경할 항목을 선택하세요");
+		}
+	});
+
+	//단일 상태변경
+	$(document).on('change','[name="exposure"]',function(){
+		var chk_no = new Array();
+		var status = $(this).val();
+		chk_no[0] = $(this).data("no");
+
+		if(confirm("변경하시겠습니까?")){
+			$.post("./info.php",{
+				mode : "all_talk_stat",
+				chk_no : chk_no,
+				status : status
+			},function(e){
+				if(e.error){
+					alert(e.msg);
+				}else{
+					alert(e.msg);
+				}
+				window.location.reload();
+			},"json");
+		}
+	});
+
+	//순서저장
+	$(document).on("click",".orderSaveBtn",function(){
+		var table = $(".mainTable");
+		var talk_no = new Array();
+		var order = new Array();
+		var i = 0;
+
+		table.find('[name="noChk[]"]').each(function(){
+			talk_no[i] = $(this).val();
+			order[i] = $(this).parent().parent().find(".orderNo").val();
+			i++;
+		});
+
+		$.post("./info.php",{
+			mode : "main_order_save_talk",
+			talk_no : talk_no,
+			order : order
+		},function(e){
+			alert(e.msg);
+			window.location.reload();
+		},"json");
+	
+	});
+
+	//선택 스토리메인 지정노출
+	$(document).on("click",".mainMemberIn",function(){
+		var chk_no = new Array();
+		var i = 0;
+		$(".listTable").find('[name="noChk[]"]:checked').each(function(){
+			chk_no[i] = $(this).val();
+			i++;
+		});
+
+		if(i > 0){
+			if(confirm("선택한 항목을 지정노출하시겠습니까?")){
+				$.post("./info.php",{
+					mode : "main_list_in_talk",
+					chk_no : chk_no
+				},function(e){
+					if(e.error){
+						alert(e.msg);
+					}else{
+						alert(e.msg);
+					}
+					window.location.reload();
+				},"json");
+			}
+		}else{
+			alert("지정노출할 항목을 선택하세요");
+		}
+	});
+
+	//보기
+	$(document).on("click",".readBtn",function(){
+		var talk_no = $(this).data("no");
+
+		$.post("./info.php",{
+			mode : "read_talk",
+			talk_no : talk_no
+		},function(e){
+			if(e.error){
+				$(".talk_title").html(e.talk_title);
+				$('[name="talk_status"]').attr('data-no',e.talk_no);
+				$('[name="talk_status"]').val(e.talk_status);
+				$(".talk_reg_date").html(e.talk_reg_date);
+				$(".talk_member").html(e.talk_member);
+				$(".talk_animal").html(e.talk_animal);
+				$(".talk_type").html(e.talk_type);
+				$(".talk_memo").html(e.memo);
+				$(".okMemo").attr('data-no',e.talk_no);
+			}
+		},"json");
+	});
+
+	$(document).on("click",".okMemo",function(){
+		var talk_no = $(this).data("no");
+		var memo_text = $('[name="memo_text"]').val();
+
+		if(typeof talk_no == "undefined"){
+			return false;
+		}
+
+		if($.trim(memo_text) == ''){
+			return false;
+		}
+
+		$.post("./info.php",{
+			mode : "talk_memo_insert",
+			memo : memo_text,
+			talk_no : talk_no
+		},function(e){
+			location.href="/admin/contents/talk.html";
+		},"json");
+
+
+	});
+
+	$(document).on("change",'[name="talk_status"]',function(){
+		var chk_no = new Array();
+		var status = $(this).val();
+		var talk_no = $(this).data("no");
+		
+		if(typeof talk_no == "undefined"){
+			return false;
+		}
+
+		chk_no[0] = talk_no;
+
+		if(confirm("변경하시겠습니까?")){
+			$.post("./info.php",{
+				mode : "all_talk_stat",
+				chk_no : chk_no,
+				status : status
+			},function(e){
+				if(e.error){
+					alert(e.msg);
+				}else{
+					alert(e.msg);
+				}
+				//window.location.reload();
+			},"json");
+		}
+	});
+});
+</script>
+<div id="wrapper">
+<form method="get" name="s_frm" action="<?=$PHP_SELF?>">
+<input type="hidden" name="find_object" value="" />
+<input type="hidden" name="find_text" value="" />
+<input type="hidden" name="status" value="" />
+<input type="hidden" name="day" value="" />
+<input type="hidden" name="sDate" value="" />
+<input type="hidden" name="eDate" value="" />
+<input type="hidden" name="order" value="" />
+<input type="hidden" name="limit" value="" />
+</form>
+    <div id="container" class="">
+
+        <h1 id="container_title"><?=$title3?>
+		
+			<!--<a class="containerTop_bt" href="#">
+				저장
+			</a>-->
+		
+		</h1>
+		
+		
+        <div class="container_wr">
+		
+
+			<div class="inner pr w100_hAtuo">
+				<h1 class="h1_bb clearfix">검색 <span class="foldBt">접기</span></h1>
+				
+				
+				<!-- 1 -->
+				<div class="pr w100_hAtuo line lineTop">
+					<ul class="pr w100_hAtuo clearfix editUl">
+						<li class="pr editLi01">
+							<h3>검색분류</h3>
+						</li>
+						<li class="pr editLi02">
+						
+							<div class="checks small pr checkDiv checkDiv0 f0">
+								<select class="cateSelect3 cateSelect3-2" name="find_objects">
+									<?=option_make($talk_admin_search_op,$find_object)?>
+								</select>
+								
+								<input type="text" class="input01" name="find_texts" value="<?=$find_text?>" />
+								
+							</div>
+							
+						</li>
+					</ul><!-- editUl end -->
+				</div><!-- line end -->
+				<!-- 1 end-->
+				
+				
+				<!-- 2 -->
+				<div class="pr w100_hAtuo line">
+					<ul class="pr w100_hAtuo clearfix editUl">
+						<li class="pr editLi01">
+							<h3>발행상태</h3>
+						</li>
+						<li class="pr editLi02">
+							<div class="checks small pr checkDiv">
+								<input class="squareInput" id="statuss-1" type="radio" name="statuss" value="all" <?=($status=='all')?"checked":""?> />
+								
+								<label for="talkInput01-1"><span><span></span></span>전체</label>
+							</div>
+							<?
+							$i=1;
+							foreach($navi_stat_op as $k => $v){
+								$i++;
+								$checked = '';
+								if($status==$k){
+									$checked = "checked";
+								}
+							?>
+							<div class="checks small pr checkDiv">
+								<input class="squareInput" id="statuss-<?=$i?>" type="radio" name="statuss" value="<?=$k?>" <?=$checked?>  />
+								
+								<label for="statuss-<?=$i?>"><span><span></span></span><?=$v?></label>
+							</div>
+							<? } ?>
+
+							
+						</li>
+					</ul><!-- editUl end -->
+				</div><!-- line end -->
+				<!-- 2 end-->
+				
+				
+				<!-- 3 -->
+				<div class="pr w100_hAtuo line" style="border-bottom: 0;">
+					<ul class="pr w100_hAtuo clearfix editUl">
+						<li class="pr editLi01">
+							<h3>등록기간</h3>
+						</li>
+						<li class="pr editLi02">
+						
+							<div class="prNb buttonBox">
+								<ul class="pr clearfix dateDay">
+									<li class="pr <?=($day=='3')?"active":""?>" data-no="3">
+										3일
+									</li>
+									<li class="pr <?=($day=='7')?"active":""?>" data-no="7">
+										7일
+									</li>
+									<li class="pr <?=($day=='30')?"active":""?>" data-no="30">
+										30일
+									</li>
+									<li class="pr <?=($day=='90')?"active":""?>" data-no="90">
+										90일
+									</li>
+									<li class="pr <?=($day=='all')?"active":""?>" data-no="all">
+										전체
+									</li>
+								</ul>
+							</div>
+							
+							
+<script>
+$(".buttonBox ul li").click(function(){
+	$(".buttonBox ul li.active").removeClass("active");
+	$(this).toggleClass("active");
+});
+</script>
+						
+						
+							<div class="prNb dateBox dateBox2">
+							
+								<div class="prNb calInput mr5">
+									<input class="input06" autocomplete="off" type="text" name="searchSDate" id="date1" value="<?=$sDate?>" />
+								</div>
+									
+								<span class="spanText">~</span>
+								
+								<div class="prNb calInput mr5">
+									<input class="input06" autocomplete="off" type="text" name="searchEDate" id="date2" value="<?=$eDate?>" />
+								</div>
+								
+							</div><!-- dateBox end -->
+
+						
+							
+						</li>
+					</ul><!-- editUl end -->
+				</div><!-- line end -->
+				<!-- 3 end-->
+				
+				
+				<!-- 4 -->
+				<div class="pr w100_hAtuo line bgfff">
+					<ul class="pr w100_hAtuo clearfix editUl">
+						<li class="pr editLi01" style="width: 100%; padding-left: 0;">
+						
+							<div class="pr btLine">
+								<a class="btLine_bt btLine_bt1 mr5 searchBtn">
+									검색
+								</a>
+								<a class="btLine_bt btLine_bt2" href="./talk.html">
+									초기화
+								</a>
+							</div>
+						
+						
+						</li>
+					</ul><!-- editUl end -->
+				</div><!-- line end -->
+				<!-- 4 end-->
+				
+				
+				
+			</div>
+
+        </div><!-- container_wr -->
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<div class="container_wr">
+			<div class="inner pr w100_hAtuo">
+				<h1 class="h1_bb clearfix">검색결과/메인노출관리 <span class="foldBt">접기</span></h1>
+				
+				
+				<div class="pr w100_hAtuo line bgfff">
+					<ul class="pr w100_hAtuo clearfix editUl">
+						<li class="pr editLi01" style="width: 100%;">
+							<h3>
+								[ 스토리메인 지정노출 리스트 ]
+							</h3>
+						</li>
+						<li class="pr editLi01" style="width: 100%; padding-left: 0;">
+												
+							<div class="pr option_tableBox option_tableBox2 mt0">
+								
+								<table class="prNb optionTable optionTable2 mainTable">
+									<tbody>
+									
+										<td style="width: 64px;">
+												<input type="checkbox" class="checkInput allChkBtn"/>
+											</td>
+											<td style="width: 64px;">
+												NO
+											</td>
+											<td style="width: 400px;">
+												제목
+											</td>
+											<td style="width: 182px;">
+												작성자
+											</td>
+											<td style="width: 166px;">
+												구분
+											</td>
+											<td style="width: 176px;">
+												반려동물이름
+											</td>
+											<td style="width: 176px;">
+												등록일
+											</td>
+											<td style="width: 176px;">
+												발행상태
+											</td>
+											<td style="width: 231px;">
+												보기
+											</td>
+<?
+for($i=0;$i<1;$i++){
+	$mem = $db->get_data("SELECT * FROM member WHERE member_no='".$main_list['member_no'][$i]."'");
+?>
+										<!-- ↓ count -->									
+										<tr>
+											<td>
+												<input type="checkbox" class="checkInput" name="noChk[]" value="<?=$main_list["talk_no"][$i]?>" />
+											</td>
+											<td>
+												<input type="text" class="input04-2 orderNo"  value="<?=$main_list["is_main_order"][$i]?>" />
+											</td>
+											<td>
+												<a class="aDeco" href="/story/talk/detail.html?talk_no=<?=$main_list['talk_no'][$i]?>">
+													<?=$main_list['title'][$i]?>
+												</a>
+											</td>
+											<td>
+												<a class="aDeco" href="/admin/member/member.html?member_no=<?=$main_list['member_no'][$i]?>">
+												<?=$mem['name']?>
+												</a>
+											</td>
+											<td>
+												<?=$animal_gubun_op[$main_list['gubun'][$i]]?>
+											</td>
+											<td>
+												<a class="aDeco" href="/admin/member/companion_animal.html?member_no=<?=$main_list['animal_no'][$i]?>#modal_abBox1-01">
+												<?=$main_list['animal_name'][$i]?>
+												</a>												
+											</td>
+											<td>
+												<?=$main_list['reg_date'][$i]?>
+											</td>
+											<td>
+											<? if($main_list['talk_no'][$i] != ''){ ?>
+												<select class="tableSelect" name="exposure" data-no="<?=$main_list['talk_no'][$i]?>">
+													<?=option_make($navi_stat_op,$main_list['status'][$i])?>
+												</select>
+											<? } ?>
+											</td>
+											<td>
+											<? if($main_list['talk_no'][$i] != ''){ ?>
+												<a class="button01 pl15 pr15 readBtn" data-no="<?=$main_list["talk_no"][$i]?>" data-remodal-target="modal_abBox1-01">
+													보기
+												</a>
+											<? } ?>
+											</td>
+										</tr>
+<? } ?>
+										
+									
+										
+									</tbody>
+								</table>
+							</div><!-- option_tableBox end -->
+						
+							<div class="pr btLine btLine2">
+								<a class="btLine_bt btLine_bt2 mr5 orderSaveBtn">
+									순서저장
+								</a>
+								<a class="btLine_bt btLine_bt2 allDelChk" data-type="mainTable">
+									지정노출 취소
+								</a>
+							</div>
+								
+							
+						</li>
+					</ul><!-- editUl end -->
+				</div><!-- line end -->
+
+				
+				
+				
+				<!-- 1 -->
+				<div class="pr w100_hAtuo line lineTop bgfff">
+					<ul class="pr w100_hAtuo clearfix editUl">
+						<li class="pr editLi01">
+							<h3>[총 <?=$list['total']?>개]</h3>
+						</li>
+						<li class="pr editLi02">
+						
+							<div class="checks small pr checkDiv checkDiv0 f0" style="text-align: right;">
+								<select class="prNb cateSelect4 mr5" name="orderBy">
+									<?=option_make($adopt_search_order_op,$order)?>
+								</select>
+								
+								
+								
+								<select class="prNb cateSelect4" name="limited">
+									<?=option_make($pro_search_limit_op,$limit)?>
+								</select>
+							</div>
+							
+						</li>
+					</ul><!-- editUl end -->
+				</div><!-- line end -->
+				<!-- 1 end-->
+				
+				<!-- 2 -->
+				<div class="pr w100_hAtuo line bgfff">
+					<ul class="pr w100_hAtuo clearfix editUl">
+						<li class="pr editLi01" style="width: 100%; padding-left: 0;">
+						
+												
+							<div class="pr option_tableBox option_tableBox2">
+								
+								
+								<table class="prNb optionTable optionTable2 listTable">
+									<tbody>
+									
+										<tr class="topTr">
+											<td style="width: 64px;">
+												<input type="checkbox" class="checkInput allChkBtn"/>
+											</td>
+											<td style="width: 64px;">
+												NO
+											</td>
+											<td style="width: 400px;">
+												제목
+											</td>
+											<td style="width: 182px;">
+												작성자
+											</td>
+											<td style="width: 166px;">
+												구분
+											</td>
+											<td style="width: 176px;">
+												반려동물이름
+											</td>
+											<td style="width: 176px;">
+												등록일
+											</td>
+											<td style="width: 176px;">
+												발행상태
+											</td>
+											<td style="width: 231px;">
+												보기
+											</td>
+										</tr>
+										
+										<!-- ↓ count -->
+<?
+for($i=0;$i<count($list['talk_no']);$i++){
+	$no = $list['total'] - (($page-1)*$list['row'])  - $i;
+	$mem = $db->get_data("SELECT * FROM member WHERE member_no='".$list['member_no'][$i]."'");
+?>
+										<tr>
+											<td>
+												<input type="checkbox" class="checkInput" name="noChk[]" value="<?=$list["talk_no"][$i]?>" />
+											</td>
+											<td>
+												<?=$no?>
+											</td>
+											<td>
+												<a class="aDeco" href="/story/talk/detail.html?talk_no=<?=$list['talk_no'][$i]?>">
+													<?=$list['title'][$i]?>
+												</a>
+											</td>
+											<td>
+												<a class="aDeco" href="/admin/member/member.html?member_no=<?=$list['member_no'][$i]?>">
+												<?=$mem['name']?>
+												</a>
+											</td>
+											<td>
+												<?=$animal_gubun_op[$list['gubun'][$i]]?>
+											</td>
+											<td>
+												<a class="aDeco" href="/admin/member/companion_animal.html?member_no=<?=$list['animal_no'][$i]?>#modal_abBox1-01">
+												<?=$list['animal_name'][$i]?>
+												</a>												
+											</td>
+											<td>
+												<?=$list['reg_date'][$i]?>
+											</td>
+											<td>
+												<select class="tableSelect" name="exposure" data-no="<?=$list['talk_no'][$i]?>">
+													<?=option_make($navi_stat_op,$list['status'][$i])?>
+												</select>
+											</td>
+											<td>
+												<a class="button01 pl15 pr15 readBtn" data-no="<?=$list["talk_no"][$i]?>" data-remodal-target="modal_abBox1-01">
+													보기
+												</a>
+											</td>
+										</tr>
+<? } ?>
+										<!-- ↓ count -->
+									
+										
+									</tbody>
+								</table>
+							</div><!-- option_tableBox end -->
+						
+							<div class="pr btLine btLine2 mt10">
+								<a class="btLine_bt btLine_bt2 allDelChk" data-type="listTable">
+									선택삭제
+								</a>
+								<!-- <a class="btLine_bt btLine_bt2 ml5" data-remodal-target="modal_abBox1-01">
+									카테고리 변경
+								</a> -->
+								<select class="prNb btLine2_select ml5 pl5 allupStBtn">
+									<option value="">
+										발행상태 일괄변경
+									</option>
+									<?=option_make($navi_stat_op,"")?>
+								</select>
+								
+								<a class="a_button00 ml5 mainMemberIn">
+									선택 스토리메인 지정노출
+								</a>
+							</div>
+
+							<span class="clearfix"></span>
+
+							<div class="pr mt5 mb5 pagination">
+								<nav>
+									<?=$list['page_string']?>
+								</nav>
+							</div>
+								
+							
+						</li>
+					</ul><!-- editUl end -->
+				</div><!-- line end -->
+				<!-- 2 end-->
+				
+				
+			</div>
+		</div>		
+		
+		
+							
+<!-- 보기 팝업 시작 -->			
+							
+<div class="remodal" data-remodal-id="modal_abBox1-01">
+	
+	<div class="inner pr w100_hAtuo">
+		<h1 class="h1_bb clearfix talk_title" style="text-align: left;"></h1>	
+		
+		<!-- 1 -->
+		<div class="pr w100_hAtuo line">			
+			
+			<ul class="pr w100_hAtuo clearfix editUl">
+				<li class="pr editLi01" style="text-align: left;">
+					<h3>발행상태</h3>
+				</li>
+				<li class="pr editLi02" style="width: 1005px; text-align: left;">
+					<select class="select01" name="talk_status" data-no="">
+						<?=option_make($navi_stat_op,"")?>
+					</select>
+				</li>
+			</ul><!-- editUl end -->
+			
+		</div><!-- line end -->
+		<!-- 1 end -->
+		
+		<!-- 2 -->
+		<div class="pr w100_hAtuo line">			
+			
+			<ul class="pr w100_hAtuo clearfix editUl">
+				<li class="pr editLi01" style="text-align: left;">
+					<h3>발행일</h3>
+				</li>
+				<li class="pr editLi02 talk_reg_date" style="width: 1005px; text-align: left;">
+					
+				</li>
+			</ul><!-- editUl end -->
+			
+		</div><!-- line end -->
+		<!-- 2 end -->
+		
+		<!-- 3 -->
+		<div class="pr w100_hAtuo line">			
+			
+			<ul class="pr w100_hAtuo clearfix editUl">
+				<li class="pr editLi01" style="text-align: left;">
+					<h3>작성자</h3>
+				</li>
+				<li class="pr editLi02 talk_member" style="width: 1005px; text-align: left;">
+				
+				</li>
+			</ul><!-- editUl end -->
+			
+		</div><!-- line end -->
+		<!-- 3 end -->
+		
+		<!-- 4 -->
+		<div class="pr w100_hAtuo line">			
+			
+			<ul class="pr w100_hAtuo clearfix editUl">
+				<li class="pr editLi01" style="text-align: left;">
+					<h3>반려동물</h3>
+				</li>
+				<li class="pr editLi02 talk_animal" style="width: 1005px; text-align: left;">
+				
+				</li>
+			</ul><!-- editUl end -->
+			
+		</div><!-- line end -->
+		<!-- 4 end -->
+		
+		<!-- 5 -->
+		<div class="pr w100_hAtuo line">			
+			
+			<ul class="pr w100_hAtuo clearfix editUl">
+				<li class="pr editLi01" style="text-align: left;">
+					<h3>유형</h3>
+				</li>
+				<li class="pr editLi02 talk_type" style="width: 1005px; text-align: left;">
+				
+				</li>
+			</ul><!-- editUl end -->
+			
+		</div><!-- line end -->
+		<!-- 5 end -->
+		
+		<!-- 6 -->
+		<div class="pr w100_hAtuo line">			
+			
+			<ul class="pr w100_hAtuo clearfix editUl">
+				<li class="pr editLi01" style="text-align: left;">
+					<h3>처리이력</h3>
+				</li>
+				<li class="pr editLi02 talk_memo" style="width: 1005px; text-align: left;">
+					
+				</li>
+			</ul><!-- editUl end -->
+			
+		</div><!-- line end -->
+		<!-- 6 end -->
+		
+		<!-- 7 -->
+		<div class="pr w100_hAtuo line">			
+			
+			<ul class="pr w100_hAtuo clearfix editUl">
+				<li class="pr editLi01" style="text-align: left;">
+					<h3>메모등록</h3>
+				</li>
+				<li class="pr editLi02" style="width: 1005px; text-align: left;">
+					<textarea class="textarea00" name="memo_text"></textarea>
+				</li>
+			</ul><!-- editUl end -->
+			
+		</div><!-- line end -->
+		<!-- 7 end -->
+		
+		
+				
+		<div class="pr w100_hAtuo line">
+			<ul class="pr w100_hAtuo clearfix editUl">
+				<li class="pr editLi01" style="width: 100%; padding-left: 0;">
+				
+					<div class="pr btLine bgfff">
+						<a class="btLine_bt btLine_bt1 mr5 okMemo" data-no="">
+							확인
+						</a>
+						<a class="btLine_bt btLine_bt2" href="#">
+							취소
+						</a>
+					</div>
+				
+				
+				</li>
+			</ul><!-- editUl end -->
+		</div>
+		
+	</div><!-- inner end -->
+</div><!-- remodal end -->
+							
+<!-- 팝업 end -->
+		
+		
+		
+		
+		
+		
+		
+		
+<?
+include $_SERVER['DOCUMENT_ROOT']."/admin/inc/footer.html";
+?>

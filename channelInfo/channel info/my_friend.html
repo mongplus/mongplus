@@ -1,0 +1,139 @@
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/meta.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/header.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/story-sub_nav.html";
+$info = $db->get_data("SELECT * FROM animal WHERE animal_no='".$animal_no."'");
+
+if($info['birth'] != ''){
+	$birth = explode(".",$info['birth']);
+	$date2 = date('Y.m');
+	//$month = date('m');
+	$date = getMonthNum($date2,$info['birth'],".");
+
+	$births = ceil($date/12);
+
+}
+
+$filter_option = $db->get_data("SELECT * FROM filter_option WHERE option_no='".$info['fillter_no']."'");
+
+$talk_cnt = $db->get_data("SELECT COUNT(*) AS cnt FROM talk WHERE animal_no='".$animal_no."' AND status='Y'");
+$reviews_cnt = $db->get_data("SELECT COUNT(*) AS cnt FROM reviews WHERE animal_no='".$animal_no."' AND status='Y'");
+$studio_cnt = $db->get_data("SELECT COUNT(*) AS cnt FROM studio WHERE animal_no='".$animal_no."' AND status='Y'");
+
+$thum_file = '';
+if($info['file2'] != ''){
+	
+	$file1 = explode(".",$info['file2']);
+	$thum_file = "/upload/animal/".$file1[0]."_thum.".end($file1);
+	$orginal_file = "/upload/animal/".$info['file2'];
+
+	if(!file_exists($_SERVER['DOCUMENT_ROOT'].$thum_file) && file_exists($_SERVER['DOCUMENT_ROOT'].$orginal_file)){
+		F_resize_img3($_SERVER['DOCUMENT_ROOT'].$orginal_file, $_SERVER['DOCUMENT_ROOT'].$thum_file);
+	}else if(file_exists($_SERVER['DOCUMENT_ROOT'].$thum_file)){
+
+	}else{
+		$thum_file = $orginal_file;
+	}
+}
+?>
+	<link rel="stylesheet" type="text/css" href="/css/ma_page.css">
+<script language="javascript">
+$(function(){
+	$(document).on("click",".my_act_type01_tab_tabs_01",function(){
+		var type = $(this).data("type");
+		var animal = $('[name="animal_no"]').val();
+
+		location.href = "/channelInfo/my_friend.html?type="+type+"&animal_no="+animal;
+	});
+});
+</script>
+	<main id="mainContainer">
+		<input type="hidden" name="animal_no" value="<?=$animal_no?>">
+		<div id="mainCon_inner" class="clearfix my_page_inner">
+
+		
+				<section class="mong_my_page_main mt0 mong_my_page_main2 mong_my_page_main3">
+					
+					<div class="my_friend_box">
+					
+						<div class="inner">
+						
+						
+							<div class="my_friends">
+								<span class="my_friends_img">
+								<? if($thum_file != ''){ ?>
+									<img src="<?=$thum_file?>">
+								<? } ?>
+								</span>
+								
+								<div class="my_friends_profile">
+									<div class="my_friends_name">
+										<span><?=$info['name']?></span><span class="<?=($info['sex'] == 'G')?"f_girl":"f_boy"?>"></span>
+									</div>
+									<div class="my_friends_profile_info">
+										<span>
+											<?=$births?>살
+										</span>
+										
+										<span class="f_p_i_spacing">간격</span>
+										
+										<span>
+											<?=$filter_option['title']?>
+										</span>
+										
+									</div>
+								</div>
+							</div>
+						
+						
+						
+						
+						
+						</div>
+					
+					</div>
+
+					<div class="my_act_type01_box">
+					
+						<div class="my_act_type01_tab">
+							<div class="row">
+								<div class="my_act_type01_tab_tabs my_act_type01_tab_tabs_01  <?=($type=='talk')?"my_act_type01_tab_tabs-active":""?>" data-type="talk">
+									<span class="txt">톡톡</span>
+									<span class="count">(<?=$talk_cnt['cnt']?>)</span>
+								</div>
+								<div class="my_act_type01_tab_tabs my_act_type01_tab_tabs_01  <?=($type=='reviews')?"my_act_type01_tab_tabs-active":""?>" data-type="reviews">
+									<span class="txt">리뷰</span>
+									<span class="count">(<?=$reviews_cnt['cnt']?>)</span>
+								</div>
+								<div class="my_act_type01_tab_tabs my_act_type01_tab_tabs_01  <?=($type=='studio')?"my_act_type01_tab_tabs-active":""?>" data-type="studio">
+									<span class="txt">스튜디오</span>
+									<span class="count">(<?=$studio_cnt['cnt']?>)</span>
+								</div>
+							</div>
+						</div>
+
+
+						<?
+						if($type != ''){
+							include $_SERVER['DOCUMENT_ROOT']."/channelInfo/".$type.".html";
+						}else{
+							include $_SERVER['DOCUMENT_ROOT']."/channelInfo/talk.html";
+						}
+						?>
+						
+						
+					</div>
+					<!-- 톡톡 end -->
+					
+					
+				</section>
+			
+		</div><!-- mainCon_inner end -->
+	</main><!-- main end -->
+	
+
+
+
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/foot.html";
+?>

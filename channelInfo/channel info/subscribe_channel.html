@@ -1,0 +1,248 @@
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/meta.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/header.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/story-sub_nav.html";
+include $_SERVER['DOCUMENT_ROOT']."/_library/function_member_channel.php";
+
+$mem = $db->get_data("SELECT * FROM member WHERE user_id='".$M_login['user_id']."'");
+
+if (!$page) $page		=	1;
+if (!$limit) $limit		=	8;
+$PARAM			=	"&order=$order&find_text=$find_text&find_object=$find_object&gubun=$gubun&option=$option&animal_title=$animal_title&filb=$filb&type=$type";
+
+$member_info = $db->get_data("SELECT * FROM member WHERE member_no='".$member_no."'");
+
+$add_query  .= " AND members_no='".$member_no."'";
+
+$condition = array(
+				"row"			=>	$limit,
+				"page"			=>	$page,
+				"order"			=>	$order,
+				"find_text"		=>	$find_texts,
+				"find_object"	=>	$find_objects,
+				"add_query"		=>	$add_query,
+			);
+
+$list				=	F_member_channel_list($condition);
+?>
+<script language="javascript">
+$(document).ready(function(){
+	$(document).on("click",".channel_out",function(){
+		var member_no = $(this).data("no");
+		$.post("./info.php",{
+			mode : "member_channel_in",
+			member_no : member_no
+		},function(e){
+			alert(e.msg);
+			window.location.reload();
+		},"json");
+	});
+
+	$(".switchActive").click();
+});
+</script>
+	<link rel="stylesheet" type="text/css" href="/css/ma_page.css">
+
+	<main id="mainContainer">
+
+		<div id="mainCon_inner" class="clearfix my_page_inner">
+
+
+
+					<div class="my_act_type02_box_02">
+
+
+
+							
+					<h4 class="pr wh100 bS pb20 txtalgin_c">
+						<span class="blue"><?=$member_info['nickname']?></span><span>의 구독채널</span>
+					</h3>
+
+
+
+
+					<section class="pt0 userList my_story mt0">
+						
+						<div class="row">
+<?
+for($i=0;$i<count($list['channel_no']);$i++){
+	$ch_member = $db->get_data("SELECT * FROM member WHERE member_no='".$list['member_no'][$i]."'");
+	if($ch_member['level'] == '2'){
+		$url = "/expert/talk/channel_user.html?member_no=".$ch_member['member_no'];
+		$talk = $db->get_data("SELECT COUNT(*) AS cnt FROM etalk WHERE member_no='".$ch_member['member_no']."'");
+	}else{
+		$url = "/story/talk/channel_user.html?member_no=".$ch_member['member_no'];
+		$talk = $db->get_data("SELECT COUNT(*) AS cnt FROM talk WHERE member_no='".$ch_member['member_no']."'");
+	}
+
+	$reviews = $db->get_data("SELECT COUNT(*) AS cnt FROM reviews WHERE member_no='".$ch_member['member_no']."'");
+	$studio = $db->get_data("SELECT COUNT(*) AS cnt FROM studio WHERE member_no='".$ch_member['member_no']."'");
+
+	$t_total = $talk['cnt'] + $reviews['cnt'] + $studio['cnt'];
+
+	$m_cnt = $db->get_data("SELECT COUNT(*) AS cnt FROM member_channel WHERE members_no='".$ch_member['member_no']."'");
+
+	if($list['member_no'][$i] != ''){
+		$m_m = $db->get_data("SELECT COUNT(*) AS cnt FROM member_channel WHERE members_no='".$list['member_no'][$i]."' AND member_no='".$list['member_no'][$i]."'");
+	}
+?>
+							<div class="userList_content">
+								<div class="profileImg">					
+									<span class="certification2"><!-- 인증 ic-->
+									</span>
+									<div class="Img">
+									<? if($ch_member['file2'] != ''){ ?>
+										<img src="/upload/member/<?=$ch_member['file2']?>" onclick="location.href='<?=$url?>'">
+									<? }else{ ?>
+										<img src="/images/profileImgEx.jpg" onclick="location.href='<?=$url?>'">
+									<? } ?>
+									</div>
+								</div>
+									
+								<div class="profileCon">
+
+									<div class="name">						
+										<a onclick="location.href='<?=$url?>'">
+										<?=$ch_member['nickname']?>
+										</a>
+									</div>
+
+									<div class="subTxt">
+										<a onclick="location.href='<?=$url?>'">
+										<?=$ch_member['one_text']?>
+										</a>
+									</div>
+
+									<? if($m_m['cnt'] > 0){ ?>
+									<div class="subscribeBt subscribeActive mt10 channel_out" data-no="<?=$ch_member['member_no']?>">
+										구독중
+									</div>
+									<? }else{ ?>
+									<div class="subscribeBt mt10 channel_out" data-no="<?=$ch_member['member_no']?>">
+										+ 구독
+									</div>
+									<? } ?>
+
+								</div>
+								<div class="my_s_c_bottom">
+													
+									<span class="Txt">
+										스토리&nbsp;
+									</span>
+									
+									<span class="Txt">
+										<?=$t_total?>
+									</span>
+									
+									<span class="dot dotGif"></span>
+									
+									<span class="Txt">
+										구독자&nbsp;
+									</span>
+									
+									<span class="Txt">
+										<?=$m_cnt['cnt']?>
+									</span>
+									
+								</div>
+							</div><!-- userList_content end -->
+<? } ?>
+
+							<!--<div class="userList_content">
+								<div class="profileImg">					
+									<span class="certification"><!-- 인증 ic-->
+									<!--</span>
+
+									<img src="/images/profileImgEx.jpg" onclick="location.href='#'">
+								</div>
+									
+								<div class="profileCon">
+
+									<div class="name">						
+										<a onclick="location.href='#'">
+										네로네로
+										</a>
+									</div>
+
+									<div class="subTxt">
+										<a onclick="location.href='#'">
+										함께 소통해요!
+										</a>
+									</div>
+
+
+									<div class="subscribeBt mt10">
+										구독 취소
+									</div>
+
+								</div>
+								
+								<div class="my_s_c_bottom">
+													
+									<span class="Txt">
+										스토리&nbsp;
+									</span>
+									
+									<span class="Txt">
+										5k
+									</span>
+									
+									<span class="dot dotGif"></span>
+									
+									<span class="Txt">
+										구독자&nbsp;
+									</span>
+									
+									<span class="Txt">
+										5000
+									</span>
+									
+								</div>
+								
+							</div>--><!-- userList_content end -->
+						
+						
+						
+							
+							
+							
+												
+						</div>
+
+						<div class="product-paging">
+							<div class="page-warpper">
+								<?
+								$page_info['cur']		=	$condition['page'];
+								$page_info['row']		=	$condition['row'];
+								$page_info['total']		=	$list['total'];
+								$list['page_string'] = print_page_num8($page_info);
+								echo $list['page_string'];
+								?>
+							</div>
+						</div><!-- product-list-paging end -->
+					
+					</section><!-- userList end -->
+
+
+
+
+
+
+
+
+
+
+
+						</div>			
+					
+					
+			
+		</div><!-- mainCon_inner end -->
+	</main><!-- main end -->
+	
+
+
+
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/foot.html";
+?>

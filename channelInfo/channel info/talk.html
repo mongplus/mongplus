@@ -1,0 +1,106 @@
+<?
+include $_SERVER['DOCUMENT_ROOT']."/_library/function_talk.php";
+
+if (!$page) $page		=	1;
+if (!$limit) $limit		=	12;
+$PARAM			=	"&order=$order&find_text=$find_text&find_object=$find_object&gubun=$gubun&option=$option&animal_title=$animal_title&filb=$filb&type=$type";
+
+$add_query  .= " AND status='Y' AND animal_no='".$animal_no."'";
+
+$condition = array(
+				"row"			=>	$limit,
+				"page"			=>	$page,
+				"order"			=>	$order,
+				"find_text"		=>	$find_texts,
+				"find_object"	=>	$find_objects,
+				"add_query"		=>	$add_query,
+			);
+
+$list				=	F_talk_list($condition);
+?>
+<section class="talktalk my_story">
+	
+	<div class="row">
+<?
+for($i=0;$i<count($list['talk_no']);$i++){
+	$mems = $db->get_data("SELECT * FROM animal WHERE member_no='".$list['member_no'][$i]."' AND file2 != ''");
+	$mems2 = $db->get_data("SELECT * FROM member WHERE member_no='".$list['member_no'][$i]."'");
+	$comment = $db->get_data("SELECT count(*) AS cnt FROM talk_comment WHERE talk_no='".$list['talk_no'][$i]."'");
+
+	$thum_file = '';
+	if($list['file1'][$i] != ''){
+		
+		$file1 = explode(".",$list['file1'][$i]);
+		$thum_file = "/upload/talk/".$file1[0]."_thum.".end($file1);
+		$orginal_file = "/upload/talk/".$list['file1'][$i];
+
+		if(!file_exists($_SERVER['DOCUMENT_ROOT'].$thum_file) && file_exists($_SERVER['DOCUMENT_ROOT'].$orginal_file)){
+			F_resize_img3($_SERVER['DOCUMENT_ROOT'].$orginal_file, $_SERVER['DOCUMENT_ROOT'].$thum_file);
+		}else if(file_exists($_SERVER['DOCUMENT_ROOT'].$thum_file)){
+	
+		}else{
+			$thum_file = '';
+		}
+	}
+?>	
+			<div class="row-box-type-02">
+				<div class="Img" onclick="location.href='/story/talk/detail.html?talk_no=<?=$list['talk_no'][$i]?>'">
+					<? if($thum_file != ''){ ?>
+						<img src="<?=$thum_file?>">
+					<? }else{ ?>
+						<img src="/upload/talk/<?=$list['file1'][$i]?>">
+					<? } ?>
+				</div>
+				
+				<div class="content">
+					<div class="content_title">
+						<a onclick="location.href='/story/talk/detail.html?talk_no=<?=$list['talk_no'][$i]?>'">
+							<?=$list['title'][$i]?>
+						</a>
+					</div>
+					<div class="writer_profile">
+						
+						<div class="profileImg">
+							<img src="/upload/member/<?=$mems2['file2']?>" onclick="location.href='/story/talk/channel_user.html?member_no=<?=$mems2['member_no']?>'">
+						</div>
+						
+						<div class="writer">
+							<a onclick="location.href='/story/talk/channel_user.html?member_no=<?=$mems2['member_no']?>'"><?=$mems2['nickname']?></a>
+						</div>
+						
+						<div class="status">
+							<span class="status_ic status_heart_ic">
+							</span>
+							
+							<span class="status_count">
+								<?=$list['good'][$i]?>
+							</span>
+							
+							<span class="status_ic status_balloon_ic">
+							</span>
+												
+							<span class="status_count status_count-Last">
+								<?=$comment['cnt']?>
+							</span>
+						</div>
+
+					</div>
+				</div>
+			</div><!-- row-box-type-02 end -->
+<? } ?>
+	</div><!-- row end -->
+
+	<div class="product-paging">
+		<div class="page-warpper">
+			<?
+			$page_info['cur']		=	$condition['page'];
+			$page_info['row']		=	$condition['row'];
+			$page_info['total']		=	$list['total'];
+			$list['page_string'] = print_page_num8($page_info);
+			echo $list['page_string'];
+			?>
+		</div>
+	</div><!-- product-list-paging end -->
+	
+
+</section>

@@ -1,0 +1,125 @@
+<?
+include $_SERVER['DOCUMENT_ROOT']."/_library/function_reviews.php";
+
+if (!$page) $page		=	1;
+if (!$limit) $limit		=	5;
+$PARAM			=	"&order=$order&find_text=$find_text&find_object=$find_object&gubun=$gubun&review_option=$review_option&type=$type";
+
+$add_query  .= " AND status='Y' AND animal_no='".$animal_no."'";
+
+$condition = array(
+				"row"			=>	$limit,
+				"page"			=>	$page,
+				"order"			=>	$order,
+				"find_text"		=>	$find_texts,
+				"find_object"	=>	$find_objects,
+				"add_query"		=>	$add_query,
+			);
+
+$list				=	F_reviews_list($condition);
+?>
+<section class="sub_page_review">
+	
+<?
+for($i=0;$i<count($list['reviews_no']);$i++){
+	$mems2 = $db->get_data("SELECT * FROM member WHERE member_no='".$list['member_no'][$i]."'");
+	$comment = $db->get_data("SELECT count(*) AS cnt FROM reviews_comment WHERE reviews_no='".$list['reviews_no'][$i]."'");
+
+	$detail = $db->get_list("SELECT * FROM reviews_detail WHERE reviews_no='".$list['reviews_no'][$i]."' AND type='image' ORDER BY seq ASC LIMIT 0,5");
+?>
+	<!-- count story_review_list -->
+	<div class="story_review_list">
+	
+		<div class="s_review_writer">
+			<div class="row">
+			
+				<div class="s_review_writer_img">
+					<img src="/upload/member/<?=$mems2['file2']?>">
+				</div>
+				
+				<div class="s_review_writer_profile">
+					<div class="pr wh100 s_review_title_line">
+						<a class="s_review_title" onclick="location.href='/story/review/detail.html?reviews_no=<?=$list['reviews_no'][$i]?>'">
+							<?=$list['title'][$i]?>
+						</a>
+					</div>
+				
+				
+					<span class="name" onclick="location.href='/story/review/channel_user.html?member_no=<?=$mems2['member_no']?>'">
+						<?=$mems2['nickname']?>
+					</span>							
+					 
+					<span class="c_info_bar"></span>
+					 
+					<span class="s_review_writer_date">
+					<?=date("Y.m.d",strtotime($list['reg_date'][$i]))?>
+					</span>							
+				</div>
+				
+				<div class="view_heart_comment">
+					<span class="v_h_c_icon v_icon">123
+					</span>
+					
+					<span class="v_h_c_num">
+					<?=$list['hit'][$i]?>
+					</span>
+					
+					<span class="v_h_c_icon h_icon">123
+					</span>
+
+					<span class="v_h_c_num">
+					<?=$list['good'][$i]?>
+					</span>																
+					<span class="v_h_c_icon c_icon">123
+					</span>
+					
+					<span class="v_h_c_num">
+					<?=$comment['cnt']?>
+					</span>
+				</div>
+				
+				
+				
+			</div>
+		</div><!-- review_writer end -->
+		
+		<div class="s_review_Content_Container">
+		
+			<div class="s_review_Content_Container_txt">
+			<?=$list['content'][$i]?>
+			</div>
+				
+		</div>
+		
+		<div class="s_review_img">
+		
+		
+			<!-- 이미지 열개까지 작업후 이 주석 삭제해주세요 -->
+			<ul class="s_review_img_ul clearfix">
+				<? for($s=0;$s<count($detail['detail_no'][$s]);$s++){ ?>
+					<li class="s_ga_li"><img src="/upload/reviews_detail/<?=$detail['file1'][$s]?>"></li>
+				<? } ?>
+			</ul>
+
+
+		</div><!--  s_review_img end -->
+		
+		
+	</div><!-- story_review_list end -->
+<? } ?>
+
+	<div class="product-paging">
+		<div class="page-warpper">
+			<?
+			$page_info['cur']		=	$condition['page'];
+			$page_info['row']		=	$condition['row'];
+			$page_info['total']		=	$list['total'];
+			$list['page_string'] = print_page_num8($page_info);
+			echo $list['page_string'];
+			?>
+		</div>
+	</div><!-- product-list-paging end -->
+
+
+
+</section><!-- sub_page_review end -->

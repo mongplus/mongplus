@@ -1,0 +1,425 @@
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/meta.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/header.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/story-sub_nav.html";
+include $_SERVER['DOCUMENT_ROOT']."/_library/function_studio.php";
+
+if (!$page) $page		=	1;
+if (!$limit) $limit		=	20;
+if (!$order) $order		=	key($talk_search_op);
+$PARAM			=	"&order=$order&find_text=$find_text&find_object=$find_object&gubun=$gubun&option=$option&animal_title=$animal_title&filb=$filb&tType=$tType";
+
+$add_query  .= " AND status='Y'";
+
+if($gubun != '' && $gubun != 'all'){
+	$add_query .= " AND gubun='".$gubun."'";
+}
+
+if($option != '' && $option != 'all'){
+	$add_query .= " AND `option` = '".$option."'";
+}
+
+if($animal_title != '' && $animal_title != 'all'){
+	$add_query .= " AND title_option = '".$animal_title."'";
+}
+
+if($filb != '' && $filb != 'all'){
+	$add_query .= " AND birth_option = '".$filb."'";
+}
+
+if($tType != '' && $tType != 'all'){
+	$add_query .= " AND `type` like '%".$tType."%'";
+}
+
+$condition = array(
+				"row"			=>	$limit,
+				"page"			=>	$page,
+				"order"			=>	$order,
+				"find_text"		=>	$find_texts,
+				"find_object"	=>	$find_objects,
+				"add_query"		=>	$add_query,
+			);
+
+$list				=	F_studio_list($condition);
+
+$filterB = $db->get_list("SELECT * FROM filter_option WHERE gubun='B' ORDER BY order_num ASC");
+?>
+<script language="javascript">
+$(document).ready(function(){
+	var option = "<?=$option?>";
+	var titles = "<?=$animal_title?>";
+	$(document).on("click",".filter_apply_btn",function(){
+		var orders = $('[name="orders"]').val();
+		var frm = $('[name="s_frm"]');
+		frm.find('[name="order"]').val(orders);
+		if($('[name="gubun"]:checked').length <= 0){
+			$('[name="gubun"]:eq(0)').prop("checked",true);
+		}
+
+		frm.submit();
+	});
+
+	$(document).on("change",'[name="orders"]',function(){
+		var orders = $('[name="orders"]').val();
+		var frm = $('[name="s_frm"]');
+		frm.find('[name="order"]').val(orders);
+
+		frm.submit();
+	});
+
+	$(document).on("click",".reset_btn",function(){
+		location.href = "/story/studio/";
+	});
+
+	$(document).on("click",'[name="gubun"]',function(){
+		var type = $(this).val();
+
+		$.post("./info.php",{
+			mode : "read_type",
+			type : type,
+			option : option,
+			titles : titles
+		},function(e){
+			if(e.error){
+				$('.animal_option_div').html(e.animal_option);
+				$('[name="animal_title"]').html(e.animal_title);
+
+				if(type == 'O'){
+					$(".otherHideDiv").hide();
+					$(".otherPdiv").html("종류");
+					$('[name="option"];eq(1)').click();
+				}else if(type == 'C'){
+					$(".otherHideDiv").show();
+					$(".gubun_name_one").html("모종");
+					$(".otherPdiv").html("묘종");
+				}else{
+					$(".otherHideDiv").show();
+					$(".gubun_name_one").html("크기");
+					$(".otherPdiv").html("견종");
+				}
+			}
+		},"json");
+	});
+
+	$(document).on("change",'[name="option"]',function(){
+		var type = $('[name="gubun"]:checked').val();
+		var option = $(this).val();
+
+		if($('[name="gubun"]:checked').length <= 0){
+			type = $('[name="gubun"]:eq(0)').val();
+		}
+
+		$.post("./info.php",{
+			mode : "read_options",
+			type : type,
+			option : option
+		},function(e){
+			if(e.error){
+				$('[name="animal_title"]').html(e.animal_title);
+			}
+		},"json");
+	});
+
+	if($('[name="gubun"]:checked').length > 0){
+		$('[name="gubun"]:checked').click();
+	}else{
+		var type = $('[name="gubun"]:eq(0)').val();
+
+		$.post("./info.php",{
+			mode : "read_type",
+			type : type,
+			option : option,
+			titles : titles
+		},function(e){
+			if(e.error){
+				$('.animal_option_div').html(e.animal_option);
+				$('[name="animal_title"]').html(e.animal_title);
+			}
+		},"json");
+	}
+});
+</script>
+	<main id="mainContainer">
+
+		<div id="mainCon_inner" class="clearfix">
+		
+			<div class="leftDiv talk_leftDiv pt50 pb100">
+				
+				<section class="f0 section_search search_array">
+
+					<span class="array_icon">						
+					</span>
+					<p class="bS p16 p16_f_w_b">
+						정렬
+					</p>
+				
+					<select class="sub_select sub_select_talk" name="orders">
+						<?=option_make($talk_search_op,$order)?>
+					</select>
+					
+					
+				</section><!-- section_search end -->
+				
+				<form method="get" name="s_frm" action="<?=$PHP_SELF?>">
+				<input type='hidden' name="order" value='<?=$order?>'>
+				<section class="f0 section_search search_filter mt10">
+
+					<span class="filter_icon">						
+					</span>
+					<p class="bS p16 p16_f_w_b">
+						필터
+					</p>
+					
+					<button class="reset_btn" type="button">
+						<span class="reset_btn_icon"></span><span>초기화</span>
+					</button>
+				
+					
+					<div class="select_btn_box select_btn_box_top">
+					
+						<div class="f0 pr wh100 pb15">
+							<p class="p15 p15_f_w_b">
+							반려동물
+							</p>
+						</div>
+						
+						<div class="f0 pr wh100">
+							<?
+							$i = 0;
+							foreach($animal_gubun2_op as $k => $v){
+								$i++;
+								$check = '';
+								if($k == $gubun){ $check = 'checked'; }
+							?>
+								<input type="radio" class="radios" id="radio01_0<?=$i?>" <?=$check?> name="gubun" value="<?=$k?>" />
+								<label for="radio01_0<?=$i?>" class="radios_label f12"><?=$v?></label>
+							<? } ?>	
+						</div>
+						
+					</div><!-- select_btn_box end -->
+				
+				
+				
+					<div class="dog_div dog_div_active">
+
+						<div class="select_btn_box otherHideDiv">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b gubun_name_one">
+								크기
+								</p>
+							</div>
+							
+							<div class="f0 pr wh100 animal_option_div">
+								<!--<input type="radio" class="radios" id="radio02_01" name="filter02" />
+								<label for="radio02_01" class="radios_label f12">전체</label>
+														
+								<input type="radio" class="radios" id="radio02_02" name="filter02" />
+								<label for="radio02_02" class="radios_label f12">소형견</label>
+								
+								<input type="radio" class="radios" id="radio02_03" name="filter02" />
+								<label for="radio02_03" class="radios_label f12">중형견</label>
+														
+								<input type="radio" class="radios" id="radio02_04" name="filter02" />
+								<label for="radio02_04" class="radios_label f12">대형견</label>-->
+														
+							</div>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b otherPdiv">
+								견종
+								</p>
+							</div>
+							
+					
+							<select class="sub_select" name="animal_title">
+								<option value="">
+									전체
+								</option>
+							</select>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b">
+								연령대
+								</p>
+							</div>
+							
+							<div class="f0 pr wh100">
+								<input type="radio" class="radios" <?=($filb == 'all')?"checked":""?> id="radio03_01" name="filb" value="all" />
+								<label for="radio03_01" class="radios_label f12">전체</label>
+							<?
+							$s = 1;
+							for($i=0;$i<count($filterB['option_no']);$i++){
+								$s++;
+								$check = '';
+								if($filterB['option_no'][$i] == $filb){ $check = 'checked'; }
+							?>							
+								<input type="radio" class="radios" <?=$check?> id="radio03_0<?=$s?>" name="filb" value="<?=$filterB['option_no'][$i]?>" />
+								<label for="radio03_0<?=$s?>" class="radios_label f12"><?=$filterB['title'][$i]?></label>
+							<? } ?>
+							</div>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b">
+								유형
+								</p>
+							</div>
+							
+					
+							<select class="sub_select" name="tType">
+								<option value="">
+									전체
+								</option>
+								<?=F_get_option("SELECT option_no, title FROM filter_option WHERE gubun='C' ORDER BY title ASC",$tType)?>
+							</select>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box select_btn_box_last">
+							
+							<input type="button" value="필터적용" class="filter_apply_btn" />
+							
+						</div><!-- select_btn_box end -->
+				
+					</div>
+
+				
+				</section><!-- section_search end -->
+				</form>
+				
+				
+				
+				
+				
+			
+			
+			</div><!-- leftDiv end -->
+
+			<div class="rightDiv talk_rightDiv pt50 pb100">
+			
+				<section class="talktalk studio">
+						
+						<div class="row">
+						
+<?
+for($i=0;$i<count($list['studio_no']);$i++){
+	$mems2 = $db->get_data("SELECT * FROM member WHERE member_no='".$list['member_no'][$i]."'");
+	$comment = $db->get_data("SELECT count(*) AS cnt FROM studio_comment WHERE studio_no='".$list['studio_no'][$i]."'");
+
+	$thum_file = '';
+	if($list['file1'][$i] != ''){
+		
+		$file1 = explode(".",$list['file1'][$i]);
+		$thum_file = "/upload/studio/".$file1[0]."_thum.".end($file1);
+		$orginal_file = "/upload/studio/".$list['file1'][$i];
+
+		if(!file_exists($_SERVER['DOCUMENT_ROOT'].$thum_file) && file_exists($_SERVER['DOCUMENT_ROOT'].$orginal_file)){
+			F_resize_img3($_SERVER['DOCUMENT_ROOT'].$orginal_file, $_SERVER['DOCUMENT_ROOT'].$thum_file);
+		}else if(file_exists($_SERVER['DOCUMENT_ROOT'].$thum_file)){
+	
+		}else{
+			$thum_file = '';
+		}
+	}
+?>
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='/story/studio/detail.html?studio_no=<?=$list['studio_no'][$i]?>'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='/story/studio/detail.html?studio_no=<?=$list['studio_no'][$i]?>'">
+												<?=$list['title'][$i]?>
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<!-- 비디오일 경우 클레스 Video -->
+									<!--<div class="Img Video" onclick="location.href='/story/studio/detail_01.html'">
+										<img src="/upload/studio/<?=$list['file1'][$i]?>">
+									</div>-->
+									<div class="Img" onclick="location.href='/story/studio/detail.html?studio_no=<?=$list['studio_no'][$i]?>'">
+										<? if($thum_file != ''){ ?>
+											<img src="<?=$thum_file?>">
+										<? }else{ ?>
+											<img src="/upload/studio/<?=$list['file1'][$i]?>">
+										<? } ?>
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/upload/member/<?=$mems2['file2']?>" onclick="location.href='/story/studio/channel_user.html?member_no=<?=$mems2['member_no']?>'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='/story/studio/channel_user.html?member_no=<?=$mems2['member_no']?>'"><?=$mems2['nickname']?></a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													<?=$list['good'][$i]?>
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													<?=$comment['cnt']?>
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+<? } ?>
+							
+						</div><!-- row end -->
+
+						<div class="product-paging">
+							<div class="page-warpper">
+								<?
+								$page_info['cur']		=	$condition['page'];
+								$page_info['row']		=	$condition['row'];
+								$page_info['total']		=	$list['total'];
+								$list['page_string'] = print_page_num8($page_info);
+								echo $list['page_string'];
+								?>
+							</div>
+						</div><!-- product-list-paging end -->
+						
+					
+					</section><!-- studio end -->
+			
+			
+			
+			
+			
+			
+			
+			</div><!-- rightDiv end -->
+			
+		</div><!-- mainCon_inner end -->
+	</main><!-- main end -->
+	
+	
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/foot.html";
+?>

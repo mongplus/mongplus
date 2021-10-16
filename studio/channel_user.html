@@ -1,0 +1,21 @@
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/meta.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/header.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/story-sub_nav.html";
+?>
+
+	<main id="mainContainer">
+
+		<div id="mainCon_inner" class="clearfix">
+
+<?//일반회원일경우 standard_channel.html or 전문가일경우 expert_channel.html
+include $_SERVER['DOCUMENT_ROOT']."/inc/channel_user/standard_channel.html";
+?>
+			
+		</div><!-- mainCon_inner end -->
+	</main><!-- main end -->
+	
+	
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/foot.html";
+?>

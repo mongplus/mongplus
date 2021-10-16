@@ -1,0 +1,898 @@
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/meta.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/header.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/story-sub_nav.html";
+include $_SERVER['DOCUMENT_ROOT']."/_library/function_studio.php";
+include $_SERVER['DOCUMENT_ROOT']."/_library/function_studio_comment.php";
+
+$info = F_studio(array("mode"=>"read", "studio_no"=>$studio_no));
+
+$list = $db->get_list("SELECT * FROM studio_detail WHERE studio_no='".$info['studio_no']."' ORDER BY seq ASC");
+
+$comment_condition = array(
+				"row"			=>	2,
+				"page"			=>	1,
+				"order"			=>	" reg_date DESC",
+				"find_text"		=>	$find_text,
+				"find_object"	=>	$find_object,
+				"add_query"		=>	" AND studio_no='".$studio_no."'",
+			);
+
+$studio_comment	=	F_studio_comment_list($comment_condition);
+
+$add_query = '';
+if($info['type'] != ''){
+	if(strstr($info['type'],",") !== false){
+		$type_list = explode(",",$info['type']);
+	}else{
+		$type_list = array($info['type']);
+	}
+
+	for($i=0;$i<count($type_list);$i++){
+		if(trim($type_list[$i]) == ''){ continue; }
+		if($i == 0){
+			$add_query .= " type like '%".$type_list[$i]."%' ";
+		}else{
+			$add_query .= " OR type like '%".$type_list[$i]."%' ";
+		}
+	}
+
+	if($add_query != ''){
+		$add_query = " AND (".$add_query .")";
+	}
+}
+
+$list_studio = $db->get_list("SELECT * FROM studio WHERE studio_no !='".$info['studio_no']."' AND `option` ='".$info['option']."' AND title_option ='".$info['title_option']."' AND gubun ='".$info['gubun']."' ".$add_query." ORDER BY reg_date DESC limit 0, 12");
+
+$channel = array();
+if($M_login['user_id'] != ''){
+	$member_info_me = $db->get_data("SELECT * FROM member WHERE user_id='".$M_login['user_id']."'");
+
+	$channel = $db->get_data("SELECT * FROM member_channel WHERE member_no='".$info['member_no']."' AND members_no='".$member_info_me['member_no']."'");
+
+	$good_chk = $db->get_data("SELECT * FROM studio_goods WHERE studio_no='".$info['studio_no']."' AND member_no='".$member_info_me['member_no']."'");
+
+	$collect_chk = $db->get_data("SELECT * FROM studio_collect WHERE studio_no='".$info['studio_no']."' AND member_no='".$member_info['member_no']."'");
+}
+?>
+<link rel="stylesheet" href="/plugin/tagImg/tag_style.css">
+<script type="text/javascript" src="/js/loading.js"></script>
+<script language="javascript">
+$(document).ready(function(){
+	$(".edit_btn").remove();
+	$(".imgTagBtn").remove();
+	//$(".taggd__popup").show();
+
+	var img_no = '';
+	var img_html = '';
+
+	$(".taggd__wrapper").hide();
+
+	$(".taggd__popup").find(".product_select_div_active").each(function(){
+		img_no = $(this).data("no");
+		img_html = '/shop/market/detail.html?product_no='+img_no;
+
+		$(this).parent().parent().parent().parent().parent().parent().find(".taggd__button").attr("data-link",img_html);
+		$(this).parent().parent().parent().parent().parent().parent().find(".taggd__button").addClass("taggd__button_link");
+		$(this).parent().parent().parent().parent().parent().parent().find(".taggd__popup").html("");
+	});
+
+	var img_textarea = '';
+	$(".taggd__popup").find("textarea").each(function(){
+		if(typeof $(this).data("text") != 'undefined'){
+			img_textarea = '<div class="talk_img_tag_div">'+$(this).data("text")+"</div>";
+		}else{
+			img_textarea = '';
+		}
+
+		$(this).parent().parent().parent().html(img_textarea);
+		
+	});
+
+	/*$(document).on("click",".taggd__image",function(){
+		
+	});*/
+
+	$(".taggd__image").mouseout(function(){
+		$(this).parent().find(".taggd__wrapper").hide();
+	})
+	.mouseover(function(){
+		$(this).parent().find(".taggd__wrapper").show();
+	});
+
+	$(".taggd__button").mouseout(function(){
+		//$(this).parent().find(".taggd__wrapper").hide();
+		$(this).next().hide();
+	})
+	.mouseover(function(){
+		$(this).parent().parent().find(".taggd__wrapper").show();
+		$(this).next().show();
+	}); 
+
+	$(document).on("click",".taggd__button_link",function(){
+		var url = $(this).data("link");
+		window.open(url);
+	});
+
+	$(document).on("keyup",".comment_write",function(){
+		var text = $(this).text();
+		if(text.length >= 300 ){
+			text = text.substring(0,300);
+			$(this).text(text);
+		}
+			
+		$("#byteInfo").text(text.length);
+	});
+
+	var comment_ok_no = 0;
+	$(document).on("click",".comment_ok_btn",function(){
+		var text = $(".comment_write").text();
+		var studio_no = $(this).data("no");
+
+		if($.trim(text) == ''){
+			alert("댓글을 입력하세요.");
+			return false;
+		}
+
+		if(studio_no == ''){
+			alert("잘못된 접근입니다.");
+			return false;
+		}
+
+		if(comment_ok_no == 1){
+			return false;
+		}
+
+		comment_ok_no = 1;
+		Wait.Create();
+		$.post("./info.php",{
+			mode : "studio_comment_insert",
+			text : text,
+			studio_no : studio_no
+		},function(e){
+			Wait.Del();
+			window.location.reload();	
+		},"json");
+	});
+
+	$(document).on("click",".pageComent",function(){
+		var page = $(this).data("page");
+		var studio_no = $('[name="studio_no"]').val();
+
+		$.post("./info.php",{
+			mode : "studio_comment_paging",
+			page : page,
+			studio_no : studio_no
+		},function(e){
+			$(".comment_list_ul").html(e.html);
+			$(".comment_paging").html(e.page);
+		},"json");
+	});
+
+	$(document).on("click",".good_btn",function(){
+		var comment_no = $(this).data("no");
+		var obj = $(this);
+		$.post("./info.php",{
+			mode : "studio_comment_good",
+			comment_no : comment_no,
+			type : "Y"
+		},function(e){
+			obj.html(e.num);
+		},"json");
+	});
+
+	$(document).on("click",".not_good_btn",function(){
+		var comment_no = $(this).data("no");
+		var obj = $(this);
+		$.post("./info.php",{
+			mode : "studio_comment_good",
+			comment_no : comment_no,
+			type : "N"
+		},function(e){
+			obj.html(e.num);
+		},"json");
+	});
+
+	$(document).on("click",".del_good_btn",function(){
+		var comment_no = $(this).data("no");
+		var obj = $(this);
+
+		if(confirm("삭제하시겠습니까?")){
+			$.post("./info.php",{
+				mode : "studio_comment_del",
+				comment_no : comment_no
+			},function(e){
+				var page = $(".comment_paging").find(".c_paging_num01").html();
+				var studio_no = $('[name="studio_no"]').val();
+
+				if(page == ''){
+					page = 1;
+				}
+
+				$.post("./info.php",{
+					mode : "studio_comment_paging",
+					page : page,
+					studio_no : studio_no
+				},function(e){
+					$(".comment_list_ul").html(e.html);
+					$(".comment_paging").html(e.page);
+				},"json");
+			},"json");
+		}
+	});
+
+	$(document).on("click",".channerBtn",function(){
+		var studio_no = $('[name="studio_no"]').val();
+		$.post("./info.php",{
+			mode : "member_channel_in",
+			studio_no : studio_no
+		},function(e){
+			alert(e.msg);
+			window.location.reload();
+		},"json");
+	});
+
+	$(document).on("click",".goods_btn",function(){
+		var studio_no = $('[name="studio_no"]').val();
+		var obj = $(this);
+		$.post("./info.php",{
+			mode : "studio_goods",
+			studio_no : studio_no
+		},function(e){
+			if(e.num != "err"){
+				obj.find(".d_number").html(e.num);
+
+				if(e.chk){
+					obj.addClass("d_buttons-active");
+				}else{
+					obj.removeClass("d_buttons-active");
+				}
+			}
+		},"json");
+	});
+
+	$(document).on("click",".collect_btn",function(){
+		var studio_no = $('[name="studio_no"]').val();
+		var obj = $(this);
+		$.post("./info.php",{
+			mode : "studio_collect",
+			studio_no : studio_no
+		},function(e){
+			if(e.num != "err"){
+				obj.find(".d_number").html(e.num);
+
+				if(e.chk){
+					obj.addClass("d_buttons-active");
+				}else{
+					obj.removeClass("d_buttons-active");
+				}
+			}
+		},"json");
+	});
+
+	$(document).on("click",".message_btn",function(){
+		var to = $('[name="news_name"]').val();
+		var content = $('[name="news_content"]').val();
+
+		if($.trim(to) == ''){
+			alert("받는 회원이 존재하지 않습니다.");
+			return false;
+		}
+
+		if($.trim(content) == ''){
+			alert("쪽지내용을 입력하세요.");
+			return false;
+		}
+
+		$.post("/inc/channel_user/info.php",{
+			mode : "message_send",
+			to : to,
+			content : content,
+		},function(e){
+			alert(e.msg);
+			$(".close_a").click();
+		},"json");
+
+	});
+
+	$(document).on("click",".delStoryBtn",function(){
+		var no = $(this).data("no");
+
+		if(confirm("삭제하시겠습니까?")){
+			$.post("./info.php",{
+				mode : "del_story_chk",
+				no : no
+			},function(e){
+				alert(e.msg);
+				if(e.error){
+					location.href = "/story/studio/";	
+				}else{
+					window.location.reload();
+				}
+			},"json");
+		}
+	});
+
+	function hit(){
+		$.post("./hit_chk.php",{
+			no : "<?=$studio_no?>"
+		},function(e){},'json');
+	}
+
+	hit();
+});
+</script>
+	<main id="mainContainer">
+		<input type="hidden" name='studio_no' value="<?=$studio_no?>">
+		<div id="mainCon_inner" class="clearfix">
+		
+			<div class="leftDiv pb100">
+				<section class="mt50 cover_zone">
+					<div class="inner">
+						<img src="/upload/studio/<?=$info['file1']?>">
+					</div>
+				</section>
+			
+				<section class="mt25 main_section">
+					<div class="inner">
+
+						<div id="con_panel">
+							<div class="title con">
+								<div style="text-align: left">
+									 <?=$info['title']?>
+								</div>
+							</div>
+							<? if($info['content'] != ''){?>
+							<div class="text con">
+								<div style="text-align: left">
+									<div>
+										<?=nl2br($info['content'])?>
+
+									</div>
+								</div>
+							</div>
+							<? } ?>
+							
+<?
+for($i=0;$i<count($list['detail_no']);$i++){
+	if($list['type'][$i] == 'image'){
+?>
+							<div class="photo con">
+								<?=$list['title'][$i]?>
+							</div>
+							<? if($list['content'][$i] != ''){?>
+							<div class="text con">
+								<div style="text-align: left">
+									<div>
+										<?=nl2br($list['content'][$i])?>
+
+									</div>
+								</div>
+							</div>
+							<? } ?>
+<?
+	}else if($list['type'][$i] == 'video'){
+		if($list['title'][$i] != ''){
+			if(strstr($list['title'][$i],"https://youtu.be/") !== False){
+				$list['title'][$i] = str_replace("https://youtu.be/", "", $list['title'][$i]);
+			}
+
+			if(strstr($list['title'][$i],"https://www.youtube.com/watch?v=") !== False){
+				$list['title'][$i] = str_replace("https://www.youtube.com/watch?v=", "", $list['title'][$i]);
+			}
+		}
+?>
+							<div class="title con">
+								<div style="text-align: left">
+									 <iframe width="560" height="315" style="100%" src="https://www.youtube.com/embed/<?=$list['title'][$i]?>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+								</div>
+							</div>
+							<? if($list['content'][$i] != ''){?>
+							<div class="text con">
+								<div style="text-align: left">
+									<div>
+										<?=nl2br($list['content'][$i])?>
+
+									</div>
+								</div>
+							</div>
+							<? } ?>
+<?
+	}else if($list['type'][$i] == 'stitle'){
+?>
+							<div class="title con">
+								<div style="text-align: left">
+									 <?=$list['title'][$i]?>
+								</div>
+							</div>
+							<? if($list['content'][$i] != ''){?>
+							<div class="text con">
+								<div style="text-align: left">
+									<div>
+										<?=nl2br($list['content'][$i])?>
+
+									</div>
+								</div>
+							</div>
+							<? } ?>
+<?
+	}
+}
+?>			
+								
+							
+							
+							
+						</div><!-- con_panel end -->
+
+
+					</div><!-- inner end -->
+				</section><!-- cover_zone end -->
+			
+			
+<?
+if($info['animal_no'] != '' && $info['animal_no'] != 0){ 
+	$animal_info = $db->get_data("SELECT * FROM animal WHERE animal_no='".$info['animal_no']."'");
+	$mem = $db->get_data("SELECT * FROM member WHERE member_no='".$info['member_no']."'");
+	$img = ($mem['file2'] != '')? "/upload/animal/".$animal_info['file2'] : "";
+	$boy_girl = ($animal_info['sex'] != "G")? "f_boy" : "f_girl";
+	$fillter = $db->get_data("SELECT * FROM filter_option WHERE option_no='".$animal_info['fillter_no']."'");
+
+	if($animal_info['birth'] != ''){
+		$birth = explode(".",$animal_info['birth']);
+		$date2 = date('Y.m');
+		//$month = date('m');
+		$date = getMonthNum($date2,$animal_info['birth'],".");
+
+		$births = ceil($date/12);
+
+	}
+?>
+				<section class="mt40 friend_section">
+					<h4 class="pb20">
+						반려동물
+					</h4>
+					
+					
+					<div class="friend_list">
+					
+					
+						<div class="row">
+						
+							<!-- friends count -->
+							<div class="friends">
+								<span class="friends_img" onclick="location.href='/channelInfo/my_friend.html?animal_no=<?=$animal_info['animal_no']?>'">
+									<img src="<?=$img?>" />
+								</span>
+								
+								<div class="friends_profile">
+									<div class="friends_name" onclick="location.href='/channelInfo/my_friend.html?animal_no=<?=$animal_info['animal_no']?>'">
+										<span><?=$animal_info['name']?></span><span class="<?=$boy_girl?>"></span>
+									</div>
+									<div class="friends_profile_info">
+										<span>
+											<?=$animal_gubun_op[$fillter['type']]?>
+										</span>
+										
+										<span class="f_p_i_spacing">간격</span>
+										
+										<span>
+											<?=${"filter_".$fillter['type']."_op"}[$fillter["d_option"]]?>
+										</span>
+
+										<span class="f_p_i_spacing">간격</span>
+										
+										<span>
+											<?=$fillter['title']?>
+										</span>
+																				
+										<span class="f_p_i_spacing">간격</span>
+										
+										<span>
+											<?=$births?>살
+										</span>
+										
+									</div>
+								</div>
+							</div><!-- friends end -->
+							
+							
+						</div><!-- row end -->
+						
+							
+					</div><!-- friend_list end -->
+				
+				</section><!-- cover_zone end -->
+<? } ?>
+				
+				
+				<section class="mt40 comment_section">
+					<h4 class="pb20">
+						댓글
+					</h4>
+<? if($M_login['user_id'] != ''){ ?>
+					<input type="button" class="my_comment" value="내 댓글">
+
+					<div class="pr">
+					
+						<!-- <textarea placeholder="주제와 무관한 욕설과 비방 글은 사전 통보 없이 삭제될 수 있습니다." class="comment_write" onkeyup="javascript:fnChkByte(this,'300')" ></textarea>
+												 -->
+												
+						<div class="pr wh100">						
+							<div class="comment_write" contenteditable="true" placeholder="여기에 글자를 입력해주세요." >						
+							</div>
+							<a class="comment_ok_btn" data-no='<?=$studio_no?>'>
+								댓글 등록
+							</a>
+						</div><!-- div end -->
+																		
+												
+												
+						<p class="textarea_count" style="font-size: 12px;">				
+							<span id="byteInfo">0</span><span>/</span><span>300</span>
+						</p>
+					</div>
+<? } ?>
+					<div class="comment_list mt20">
+						<ul class="comment_ul comment_list_ul">
+
+<?
+
+for($i=0;$i<count($studio_comment['comment_no']);$i++){
+	$mems = $db->get_data("SELECT * FROM animal WHERE member_no='".$studio_comment['member_no'][$i]."' AND file2 != ''");
+	$mems2 = $db->get_data("SELECT * FROM member WHERE member_no='".$studio_comment['member_no'][$i]."'");
+
+	$date = timediff(strtotime('now'),strtotime($studio_comment["reg_date"][$i]));
+
+	$dateTm = '';
+
+	if($date['day'] > 0){
+		$dateTm = '<span class="comment_up_time">'.$date['day'].'</span><span>일전</span>';
+	}else if($date['hour'] > 0){
+		$dateTm = '<span class="comment_up_time">'.$date['hour'].'</span><span>시간전</span>';
+	}else if($date['min'] > 0){
+		$dateTm = '<span class="comment_up_time">방금</span>';
+	}
+
+?>
+							<!-- comment li count -->
+							<li>							
+							
+								<div class="comment_list_btn">
+									<a class="good_btn" data-no="<?=$studio_comment["comment_no"][$i]?>">
+										<?=$studio_comment["up_num"][$i]?>
+									</a>
+									<a class="not_good_btn"  data-no="<?=$studio_comment["comment_no"][$i]?>">
+										<?=$studio_comment["down_num"][$i]?>
+									</a>
+								<? if($studio_comment["member_no"][$i] == $member_info_me['member_no']){ ?>
+									<a class="del_good_btn" data-no="<?=$studio_comment["comment_no"][$i]?>">
+										삭제
+									</a>
+								<? } ?>
+								</div>
+								<div class="comment_Profile">
+									<span class="certification01"><!-- 01일반인증 02전문가인증 03인증없음 -->
+									</span>
+									<div class="Img">
+									<img src="/upload/member/<?=$mems2['file2']?>">					
+									</div>
+								</div>
+								<div class="comment_ProfileTxt">
+								<span class="name">
+									<a>
+										<?=$mems2['nickname']?>
+									</a>
+									<?=$dateTm?>
+								</span>
+								
+								<span class="comment_text">
+									<?=$studio_comment["content"][$i]?>
+								</span>
+								
+								
+								</div>
+								
+							</li>
+							<!-- comment li count end -->
+<? } ?>
+							
+						</ul>
+						
+						<div class="comment_paging">
+							<?
+							$page_info['cur']		=	$comment_condition['page'];
+							$page_info['row']		=	$comment_condition['row'];
+							$page_info['total']		=	$studio_comment['total'];
+							$studio_comment['page_string'] = print_page_num10($page_info);
+							echo $studio_comment['page_string'];
+							?>
+						</div>
+					</div><!-- comment_list end -->
+					
+				</section><!-- cover_zone end -->
+				
+				
+				<section class="mt40 talktalk">
+					<h4 class="pb20">
+						연관스튜디오
+					</h4>
+					
+					
+					<div class="row">
+				
+<?
+for($i=0;$i<count($list_studio['studio_no']);$i++){
+	$mems = $db->get_data("SELECT * FROM animal WHERE member_no='".$list_studio['member_no'][$i]."' AND file2 != ''");
+	$mems2 = $db->get_data("SELECT * FROM member WHERE member_no='".$list_studio['member_no'][$i]."'");
+	$comment = $db->get_data("SELECT count(*) AS cnt FROM studio_comment WHERE studio_no='".$list_studio['studio_no'][$i]."'");
+?>
+						<div class="row-box-type-02">
+							<div class="Img" onclick="location.href='/story/studio/detail.html?studio_no=<?=$list_studio['studio_no'][$i]?>'">
+								<img src="/upload/studio/<?=$list_studio['file1'][$i]?>">
+							</div>
+							
+							<div class="content">
+								<div class="content_title">
+									<a href="/story/studio/detail.html?studio_no=<?=$list_studio['studio_no'][$i]?>">
+										<?=$list_studio['title'][$i]?>
+									</a>
+								</div>
+								<div class="writer_profile">
+									
+									<div class="profileImg">
+										<img src="/upload/member/<?=$mems2['file2']?>" onclick="location.href='channel_user.html?member_no=<?=$mems2['member_no']?>'">
+									</div>
+									
+									<div class="writer">
+										<a onclick="location.href='channel_user.html?member_no=<?=$mems2['member_no']?>'"><?=$mems2['nickname']?></a>
+									</div>
+									
+									<div class="status">
+										<span class="status_ic status_heart_ic">
+										</span>
+										
+										<span class="status_count">
+											<?=$list_studio['good'][$i]?>
+										</span>
+										
+										<span class="status_ic status_balloon_ic">
+										</span>
+															
+										<span class="status_count status_count-Last">
+											<?=$comment['cnt']?>
+										</span>
+									</div>
+
+								</div>
+							</div>
+						</div><!-- row-box-type-02 end -->
+<? } ?>
+					
+				</div>
+					
+				</section><!-- talktalk end -->
+			
+			
+			</div><!-- leftDiv end -->
+
+			<div class="rightDiv pb100">
+<?
+$member_info = $db->get_data("SELECT * FROM member WHERE member_no='".$info['member_no']."'");
+$mems = $db->get_data("SELECT * FROM animal WHERE member_no='".$member_info['member_no']."' AND file2 != ''");
+$channel_cnt = $db->get_data("SELECT count(*) AS cnt FROM member_channel WHERE member_no='".$member_info['member_no']."'");
+
+$talk_cnt = $db->get_data("SELECT count(*) AS cnt FROM talk WHERE member_no='".$member_info['member_no']."'");
+$studio_cnt = $db->get_data("SELECT COUNT(*) as cnt FROM studio WHERE member_no='".$member_info['member_no']."'");
+$reviews_cnt = $db->get_data("SELECT COUNT(*) as cnt FROM reviews WHERE member_no='".$member_info['member_no']."'");
+$help_cnt = $db->get_data("SELECT COUNT(*) as cnt FROM help WHERE member_no='".$member_info['member_no']."'");
+
+$story_cnt = $talk_cnt['cnt'] + $studio_cnt['cnt'] + $reviews_cnt['cnt'] + $help_cnt['cnt'];
+?>
+				<section class="detail_main_profile">
+				
+					<div class="mt50 inner">
+					
+						<div class="d_profile">
+						
+							<div class="row">
+								<div class="profileImg d_profileImg">					
+									<span class="certification01"><!-- 인증 ic-->
+									</span>
+									<span class="d_profile_Img" onclick="location.href='channel_user.html?member_no=<?=$member_info['member_no']?>'">
+										<img src="/upload/member/<?=$member_info['file2']?>">
+									</span>
+								</div>
+								
+								
+								<div class="modified_delete">										
+								<? if($member_info['user_id'] == $M_login['user_id']){ ?>
+									<span class="modified_delete_a" onclick="location.href='/write/s_upload_read.html?studio_no=<?=$info['studio_no']?>'">
+									수정
+									</span>
+									
+									<span class="modified_delete_span">
+									&nbsp;/&nbsp;
+									</span>
+
+									<span class="modified_delete_a delStoryBtn" data-no="<?=$info['studio_no']?>">
+									삭제
+									</span>
+									
+								<? } ?>
+								</div>		
+								
+								<div class="d_profile_con">
+									<span class="name">
+										<span onclick="location.href='channel_user.html?member_no=<?=$member_info['member_no']?>'">
+										<?=$member_info['nickname']?>
+										</span>
+									</span>
+									
+									<div class="d_profile_con_count">
+										<span class="text">
+											스토리
+										</span>
+										
+										<span class="d_count_num">
+										<?=$story_cnt?>
+										</span>
+										
+										<span class="d_dot">
+										점
+										</span>
+										
+										<span class="text">
+										구독자
+										</span>
+										
+										<span class="d_count_num">
+										<?=$channel_cnt['cnt']?>
+										</span>
+									</div>
+								</div>
+							</div><!-- row end -->
+							
+							<div class="row mt30">
+								<? if($channel['channel_no'] != ''){ ?>
+									<a class="detail_con_btn detail_con_btn01 detail_con_btn01-active channerBtn">
+										구독중
+									</a>
+								<? }else{ ?>
+									<a class="detail_con_btn detail_con_btn01 channerBtn">
+										+ 구독
+									</a>
+								<? } ?>
+								<a class="detail_con_btn detail_con_btn02" data-mongmodal-target="massage_box">
+									쪽지
+								</a>
+							</div>
+							
+							<div class="row mt30 f0">
+								<p class="detail_title">
+									<?=$info['title']?>
+								</p>
+								
+								<span class="span_date">
+								<?=date("Y.m.d",strtotime($info['reg_date']))?>
+								</span>
+								
+								<span class="span_spacing">
+								</span>
+								
+								<span class="span_views">
+								조회수
+								</span>
+								<span class="span_count">
+								<?=$info['hit']?>
+								</span>
+							</div>
+							
+							<div class="row mt30 f0">
+								<a class="d_buttons d_buttons_01 goods_btn <?=($good_chk['good_no'] !='')?"d_buttons-active":""?>"><!--d_buttons-active-->
+									<span class="d_number">
+									<?=$info['good']?>
+									</span>
+								</a>
+								<a class="d_buttons d_buttons_02 collect_btn <?=($collect_chk !='')?"d_buttons-active":""?>">
+									<span class="d_number">
+									<?=$info['collect']?>
+									</span>
+								</a>
+								<a class="d_buttons d_buttons_03 share_btn" data-no="<?=$info['studio_no']?>">
+									<span class="d_number">
+									<?=$info['share']?>
+									</span>
+								</a>
+							</div>
+							 <div class="share_div" style="display:none;">
+
+								<a class="facebook" data-toggle='sns_share' data-service='facebook' data-title="<?=$info['title']?>">facebook</a>
+								
+								<a class="twitter" data-toggle='sns_share' data-service='twitter' data-title="<?=$info['title']?>">twitter</a>
+
+								<a class="naver" data-toggle='sns_share' data-service='naver' data-title="<?=$info['title']?>">naver</a>
+
+								<a class="kakaostory" data-toggle='sns_share' data-service='kakaostory' data-title="<?=$info['title']?>">naver</a>
+
+								<a class="band" data-toggle='sns_share' data-service='band' data-title="<?=$info['title']?>">band</a>
+
+							</div>
+							
+							<div class="d_filter mt30">
+<?
+if($info['type'] != ''){
+	if(strstr($info['type'],",") !== false){
+		$tp = explode(",",$info['type']);
+	}else{
+		$tp[] = $info['type'];
+	}
+
+	for($i=0;$i<count($tp);$i++){
+		$fil_op = $db->get_data("SELECT * FROM filter_option WHERE option_no='".$tp[$i]."'");
+		if($fil_op['option_no'] != ''){
+?>
+								<span class="filters" onclick="location.href='/story/studio/index.html?order=hit+DESC&gubun=D&animal_title=&tType=<?=$fil_op['option_no']?>'">
+									# <?=$fil_op['title']?>
+								</span>
+<?
+		}
+	}
+}
+?>
+							</div>
+						
+						</div><!-- d_pr ofile end -->
+						
+
+					</div>
+					
+				</section>
+				
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			</div><!-- rightDiv end -->
+			
+		</div><!-- mainCon_inner end -->
+	</main><!-- main end -->
+	
+<!-- 팝업 -->
+<script type="text/javascript" src="/plugin/modal/mongmodal.js"></script>
+<link rel="stylesheet" type="text/css" href="/plugin/modal/mongmodal.css">
+<link rel="stylesheet" type="text/css" href="/plugin/modal/mongmodal-default-theme.css">
+
+<div class="mongmodal" style="padding: 0; width: auto !important;" data-mongmodal-id="massage_box">
+
+	
+	<div class="massage_box_inner">
+		<a class="close_a" data-mongmodal-action="close">
+		x
+		</a>
+		<p class="name">
+			<?=$member_info['nickname']?>
+		</p>
+		<p>
+			에게 쪽지 보내기
+		</p>
+		<input type="hidden" name="news_name" value="<?=$info['member_no']?>">
+		<textarea name="news_content"></textarea>
+		
+		<div class="btn_box">
+			<a class="message_btn">
+				보내기
+			</a>
+		</div>
+	</div>
+
+
+</div><!-- modal_img end -->		
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/foot.html";
+?>

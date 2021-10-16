@@ -1,0 +1,1384 @@
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/meta.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/header.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/story-sub_nav.html";
+?>
+
+	<main id="mainContainer">
+
+		<div id="mainCon_inner" class="clearfix">
+		
+			<div class="leftDiv talk_leftDiv pt50 pb100">
+				
+				<section class="f0 section_search search_array">
+
+					<span class="array_icon">						
+					</span>
+					<p class="bS p16 p16_f_w_b">
+						정렬
+					</p>
+				
+					<select class="sub_select sub_select_talk">
+						<option>
+							인기순
+						</option>
+					</select>
+					
+					
+				</section><!-- section_search end -->
+				
+				
+				<section class="f0 section_search search_filter mt10">
+
+					<span class="filter_icon">						
+					</span>
+					<p class="bS p16 p16_f_w_b">
+						필터
+					</p>
+					
+					<button class="reset_btn">
+						<span class="reset_btn_icon"></span><span>초기화</span>
+					</button>
+				
+					
+					<div class="select_btn_box select_btn_box_top">
+					
+						<div class="f0 pr wh100 pb15">
+							<p class="p15 p15_f_w_b">
+							반려동물
+							</p>
+						</div>
+						
+						<div class="f0 pr wh100">
+							<input type="radio" class="radios" id="radio01_01" name="filter01" />
+							<label for="radio01_01" class="radios_label f12 label_dog">강아지</label>
+													
+							<input type="radio" class="radios" id="radio01_02" name="filter01" />
+							<label for="radio01_02" class="radios_label f12 label_cat">고양이</label>
+							
+							<input type="radio" class="radios" id="radio01_03" name="filter01" />
+							<label for="radio01_03" class="radios_label f12 label_other">기타</label>
+						</div>
+						
+					</div><!-- select_btn_box end -->
+				
+				
+				
+					<div class="dog_div dog_div_active">
+
+						<div class="select_btn_box">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b">
+								크기
+								</p>
+							</div>
+							
+							<div class="f0 pr wh100">
+								<input type="radio" class="radios" id="radio02_01" name="filter02" />
+								<label for="radio02_01" class="radios_label f12">전체</label>
+														
+								<input type="radio" class="radios" id="radio02_02" name="filter02" />
+								<label for="radio02_02" class="radios_label f12">소형견</label>
+								
+								<input type="radio" class="radios" id="radio02_03" name="filter02" />
+								<label for="radio02_03" class="radios_label f12">중형견</label>
+														
+								<input type="radio" class="radios" id="radio02_04" name="filter02" />
+								<label for="radio02_04" class="radios_label f12">대형견</label>
+														
+	<!-- 						<input type="radio" class="radios" id="radio02_05" name="filter02" />
+								<label for="radio02_05" class="radios_label f12">고양이</label>
+								
+								<input type="radio" class="radios" id="radio02_06" name="filter02" />
+								<label for="radio02_06" class="radios_label f12">기타</label>
+								
+								<input type="radio" class="radios" id="radio02_07" name="filter02" />
+								<label for="radio02_07" class="radios_label f12">기타</label>-->
+							</div>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b">
+								견종
+								</p>
+							</div>
+							
+					
+							<select class="sub_select">
+								<option>
+									전체
+								</option>
+							</select>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b">
+								연령대
+								</p>
+							</div>
+							
+							<div class="f0 pr wh100">
+								<input type="radio" class="radios" id="radio03_01" name="filter03" />
+								<label for="radio03_01" class="radios_label f12">전체</label>
+														
+								<input type="radio" class="radios" id="radio03_02" name="filter03" />
+								<label for="radio03_02" class="radios_label f12">6개월 미만</label>
+								
+								<input type="radio" class="radios" id="radio03_03" name="filter03" />
+								<label for="radio03_03" class="radios_label f12">6~12개월</label>
+														
+								<input type="radio" class="radios" id="radio03_04" name="filter03" />
+								<label for="radio03_04" class="radios_label f12">12~24개월</label>
+														
+								<input type="radio" class="radios" id="radio03_05" name="filter03" />
+								<label for="radio03_05" class="radios_label f12">24개월~8년</label>
+								
+								<input type="radio" class="radios" id="radio03_06" name="filter03" />
+								<label for="radio03_06" class="radios_label f12">8년 이상</label>
+							</div>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b">
+								유형
+								</p>
+							</div>
+							
+					
+							<select class="sub_select">
+								<option>
+									전체
+								</option>
+							</select>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box select_btn_box_last">
+							
+							<input type="button" value="필터적용" class="filter_apply_btn" />
+							
+						</div><!-- select_btn_box end -->
+				
+					</div><!-- dogDiv -->
+					
+					
+
+					
+<!-- /////////////////////// 구분 선 ////////////////////////////// -->
+
+
+					<div class="cat_div">
+						<!-- <div class="f12">
+						고양이
+						</div> -->
+						
+						
+
+						<div class="select_btn_box">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b">
+								모종
+								</p>
+							</div>
+							
+							<div class="f0 pr wh100">
+								<input type="radio" class="radios" id="radio04_01" name="filter04" />
+								<label for="radio04_01" class="radios_label f12">전체</label>
+														
+								<input type="radio" class="radios" id="radio04_02" name="filter04" />
+								<label for="radio04_02" class="radios_label f12">단모종</label>
+								
+								<input type="radio" class="radios" id="radio04_03" name="filter04" />
+								<label for="radio04_03" class="radios_label f12">장모종</label>
+							</div>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b">
+								묘종
+								</p>
+							</div>
+							
+					
+							<select class="sub_select">
+								<option>
+									전체
+								</option>
+							</select>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b">
+								연령대
+								</p>
+							</div>
+							
+							<div class="f0 pr wh100">
+								<input type="radio" class="radios" id="radio05_01" name="filter05" />
+								<label for="radio05_01" class="radios_label f12">전체</label>
+														
+								<input type="radio" class="radios" id="radio05_02" name="filter05" />
+								<label for="radio05_02" class="radios_label f12">6개월 미만</label>
+								
+								<input type="radio" class="radios" id="radio05_03" name="filter05" />
+								<label for="radio05_03" class="radios_label f12">6~12개월</label>
+														
+								<input type="radio" class="radios" id="radio05_04" name="filter05" />
+								<label for="radio05_04" class="radios_label f12">12~24개월</label>
+														
+								<input type="radio" class="radios" id="radio05_05" name="filter05" />
+								<label for="radio05_05" class="radios_label f12">24개월~8년</label>
+								
+								<input type="radio" class="radios" id="radio05_06" name="filter05" />
+								<label for="radio05_06" class="radios_label f12">8년 이상</label>
+							</div>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b">
+								유형
+								</p>
+							</div>
+							
+					
+							<select class="sub_select">
+								<option>
+									전체
+								</option>
+							</select>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box select_btn_box_last">
+							
+							<input type="button" value="필터적용" class="filter_apply_btn" />
+							
+						</div><!-- select_btn_box end -->
+						
+						
+					</div>
+					
+					
+
+					
+<!-- /////////////////////// 구분 선 ////////////////////////////// -->
+
+
+					<div class="other_div">
+<!-- 						<div class="f12">
+						기타
+						</div> -->
+					
+						<div class="select_btn_box">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b">
+								종류
+								</p>
+							</div>
+							
+					
+							<select class="sub_select">
+								<option>
+									전체
+								</option>
+							</select>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b">
+								연령대
+								</p>
+							</div>
+							
+							<div class="f0 pr wh100">
+								<input type="radio" class="radios" id="radio06_01" name="filter05" />
+								<label for="radio06_01" class="radios_label f12">전체</label>
+														
+								<input type="radio" class="radios" id="radio06_02" name="filter05" />
+								<label for="radio06_02" class="radios_label f12">6개월 미만</label>
+								
+								<input type="radio" class="radios" id="radio06_03" name="filter05" />
+								<label for="radio06_03" class="radios_label f12">6~12개월</label>
+														
+								<input type="radio" class="radios" id="radio06_04" name="filter05" />
+								<label for="radio06_04" class="radios_label f12">12~24개월</label>
+														
+								<input type="radio" class="radios" id="radio06_05" name="filter05" />
+								<label for="radio06_05" class="radios_label f12">24개월~8년</label>
+								
+								<input type="radio" class="radios" id="radio06_06" name="filter05" />
+								<label for="radio06_06" class="radios_label f12">8년 이상</label>
+							</div>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box">
+						
+							<div class="f0 pr wh100 pb15">
+								<p class="p15 p15_f_w_b">
+								유형
+								</p>
+							</div>
+							
+					
+							<select class="sub_select">
+								<option>
+									전체
+								</option>
+							</select>
+							
+						</div><!-- select_btn_box end -->
+					
+						<div class="select_btn_box select_btn_box_last">
+							
+							<input type="button" value="필터적용" class="filter_apply_btn" />
+							
+						</div><!-- select_btn_box end -->
+						
+						
+					</div>
+					
+				
+				</section><!-- section_search end -->
+				
+				
+				
+				
+				
+			
+			
+			</div><!-- leftDiv end -->
+
+			<div class="rightDiv talk_rightDiv pt50 pb100">
+			
+				<section class="talktalk studio">
+						
+						<div class="row">
+						
+							
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												오랜만에 댕댕이와 한강 산책
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<!-- 비디오일 경우 클레스 Video -->
+									<div class="Img Video" onclick="location.href='/story/studio/detail_01.html'">
+										<img src="/images/sample/studio_01_list.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail_01.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">RED cat</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+						
+							
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												벚꽃과 함께한 울 댕댕이~
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail_02.html'">
+										<img src="/images/sample/studio_002.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail_02.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">프리티걸</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+						
+							
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												생후 한달, 귀염 뿜뿜
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail_03.html'">
+										<img src="/images/sample/studio_003.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail_03.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">썬샤인</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+						
+							
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												꼴뚜기 시절 잊었니?
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_004.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">낭만고양이</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+						
+							
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												산책을 싫어하는 우리 꼬물이
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_005.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">냥냥이</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+						
+							
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												우리집 멍멍이 소개합니다
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_006.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">잘살아보세</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+						
+							
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												사랑스러운 아기 치즈 냥이
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_007.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">개밥그릇</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+						
+							
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												새로운 가족이 생겼어요
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_008.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">네로네로</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+
+
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												난 너가 부럽다
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_009.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">DDo</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+
+
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												우리집 막내 애교쟁이!
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_010.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">넘버3</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+
+
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												카리스마 넘치네~
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_011.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">Shady</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+
+
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												생후 한달, 귀염 뿜뿜
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_012.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">네로네로</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+
+
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												생후 한달, 귀염 뿜뿜
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_013.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">네로네로</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+
+
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												생후 한달, 귀염 뿜뿜
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_014.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">네로네로</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+
+
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												생후 한달, 귀염 뿜뿜
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_015.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">네로네로</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+
+
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												생후 한달, 귀염 뿜뿜
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_016.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">네로네로</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+
+
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												생후 한달, 귀염 뿜뿜
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_017.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">네로네로</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+
+
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												생후 한달, 귀염 뿜뿜
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_018.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">네로네로</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+
+
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												생후 한달, 귀염 뿜뿜
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_019.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">네로네로</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+
+
+								<div class="row-box-type-02">
+								
+									<!-- ↓ 게시물 제목 -->
+									<div class="content_title2">																
+										<span class="content_link" onclick="location.href='#'"></span>
+
+										<span class="bottom">
+											<a onclick="location.href='#'">
+												생후 한달, 귀염 뿜뿜
+											</a>
+										</span>
+									</div><!-- content_title2 end -->
+									
+									<div class="Img" onclick="location.href='/story/studio/detail.html'">
+										<img src="/images/sample/studio_020.jpg" />
+									</div>
+									
+									<div class="content">
+										<div class="writer_profile">
+											
+											<div class="profileImg">
+												<img src="/images/profileImgEx.jpg" onclick="location.href='/story/studio/detail.html'">
+											</div>
+											
+											<div class="writer">
+												<a onclick="location.href='#'">네로네로</a>
+											</div>
+											
+											<div class="status">
+												<span class="status_ic status_heart_ic">
+												</span>
+												
+												<span class="status_count">
+													2k
+												</span>
+												
+												<span class="status_ic status_balloon_ic">
+												</span>
+																	
+												<span class="status_count status_count-Last">
+													500
+												</span>
+											</div>
+
+										</div>
+									</div>
+								</div><!-- row-box-type-02 end -->
+
+
+							
+						</div><!-- row end -->
+						
+					
+					</section><!-- studio end -->
+			
+			
+			
+			
+			
+			
+			
+			</div><!-- rightDiv end -->
+			
+		</div><!-- mainCon_inner end -->
+	</main><!-- main end -->
+	
+	
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/foot.html";
+?>

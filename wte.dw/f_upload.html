@@ -1,0 +1,433 @@
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/meta.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/header.html";
+include $_SERVER['DOCUMENT_ROOT']."/inc/story-sub_nav.html";
+
+if($M_login['user_id'] != ''){
+	$member_info = $db->get_data("SELECT * FROM member WHERE user_id='".$M_login['user_id']."'");
+}
+
+$listC = $db->get_list("SELECT * FROM filter_option WHERE gubun='C' ORDER BY title ASC");
+?>
+<script language="javascript">
+$(document).ready(function(){
+
+	$(document).on("click",".w_friend",function(){
+		$(".w_friend").removeClass("w_friend_select");
+		$(this).addClass("w_friend_select");
+		$(".animalGubun").hide();
+
+		var animal_no = $(this).data("no");
+
+		$.post("./info.php",{
+			mode : "read_option_f",
+			animal_no : animal_no
+		},function(e){
+			if(e.error){
+				$('[name="animal_type"]').html(e.animal_type);
+				$('[name="animal_option"]').html(e.animal_option);
+				$('[name="animal_title"]').html(e.animal_title);
+				$('[name="fillterB"]').html(e.fillterB);
+				$('[name="animal_sex"]').val(e.animal_sex);
+				$('[name="animal_birth"]').val(e.animal_birth);
+				$('[name="animal_name"]').val(e.animal_name);
+			}
+		},"json");
+	});
+
+	$(document).on("click",".another_friend",function(){
+		$(".w_friend").removeClass("w_friend_select");
+		$(".animalGubun").show();
+
+		var type = $('[name="animal_type"]').val();
+
+		$.post("./info.php",{
+			mode : "read_type",
+			type : type
+		},function(e){
+			if(e.error){
+				$('[name="animal_option"]').html(e.animal_option);
+				$('[name="animal_title"]').html(e.animal_title);
+				$('[name="animal_birth"]').val('');
+				$('[name="animal_name"]').val('');
+			}
+		},"json");
+	});
+
+	$(document).on("change",'[name="animal_option"]',function(){
+		var type = $('[name="animal_type"]').val();
+		var option = $(this).val();
+
+		$.post("./info.php",{
+			mode : "read_options",
+			type : type,
+			option : option
+		},function(e){
+			if(e.error){
+				$('[name="animal_title"]').html(e.animal_title);
+			}
+		},"json");
+	});
+
+	$(document).on("change",'[name="animal_type"]',function(){
+		var type = $(this).val();
+
+		$.post("./info.php",{
+			mode : "read_type",
+			type : type
+		},function(e){
+			if(e.error){
+				$('[name="animal_option"]').html(e.animal_option);
+				$('[name="animal_title"]').html(e.animal_title);
+
+				if(type=='C'){
+					$('.animal_tp1').html("모종");
+					$('.animal_tp2').html("묘종");
+				}else{
+					$('.animal_tp1').html("크기");
+					$('.animal_tp2').html("견종");
+				}
+
+				if(e.html == ''){
+					$(".my_animal_box").hide();
+					$(".my_animal_list").find(".another_friend").click();
+				}else{
+					$(".my_animal_box").show();
+				}
+
+				$(".my_animal_list").find("div").not(".another_friend").remove();
+				$(".my_animal_list").prepend(e.html);
+			}
+		},"json");
+	});
+
+	//추가이미지 등록
+	$(document).on("click",".plusImg",function(){
+		var no = '';
+		var data = new Array(1,2,3,4,5);
+		$(".plusImgRead").each(function(){
+			no = parseInt($(this).data('no'));
+			data.splice($.inArray(no,data),1);
+		});
+		
+		if(data.length <= 0){
+			alert("이미지는 최대 5개까지 등록할 수 있습니다.");
+			return false;
+		}else{
+			$('[name="up_file'+data[0]+'"]').click();
+		}
+	});
+
+	//추가이미지 미리보기
+	$(document).on("change",'.up_file',function(){
+		var val = $(this)[0].files[0];
+		var reader = new FileReader();
+		var no  = $(this).data("no");
+
+		if(!/image\/\w+/.test(val.type)){ 
+			alert("이미지파일을 첨부해 주세요.");
+			$(this).val("");
+			return false; 
+		}
+
+		var size = (val.size/1024).toFixed(1);
+		size = (size/1024).toFixed(5)
+
+		if(size > 3){
+			alert("이미지파일의 최대용량(3MB)을 초과하였습니다."); 
+			return false; 
+		}
+
+		reader.readAsDataURL(val);
+
+		reader.onload = function(){
+			//파일주소
+			//console.log(this.result);
+
+			var html = '<li class="prNb imgUl_li representImgRead plusImgRead" data-no="'+no+'">';
+					html += '<img class="pr w100_hAtuo" src="'+this.result+'" style="height:100%;" />';
+					html += '<span class="pa remove r_removeImg removeImgBtn" >x</span>';
+				html += '</li>';
+			$(".plusImg").before(html);
+
+		 }
+	});
+
+	//추가이미지삭제
+	$(document).on("click",".removeImgBtn",function(){
+		var no = $(this).parent().data("no");
+		$('[name="up_file'+no+'"]').val("");
+		$(this).parent().remove();
+	});
+
+	$(document).on("click",".upload_Save",function(){
+		var frm = $('[name="p_frm"]');
+		var animal_no = $(".w_friend_select").data("no");
+
+		if($(".w_friend_select").length <= 0 && $('[name="animal_name"]').val() == ''){
+			alert("반려동물을 선택해 주세요.");
+			return false;
+		}
+
+		if($.trim($('[name="disappear_date"]').val()) == ''){
+			alert("실종일을 입력해 주세요.");
+			return false;
+		}
+
+		if($.trim($('[name="disappear_addr"]').val()) == ''){
+			alert("실종장소를 입력해 주세요.");
+			return false;
+		}
+
+		if($.trim($('[name="tel"]').val()) == '' && $.trim($('[name="mobile"]').val()) == ''){
+			alert("연락처를 입력해 주세요.");
+			return false;
+		}
+
+		$('[name="animal_no"]').val(animal_no);
+
+		frm.submit();
+	});
+
+	$(document).on("click",".upload_cancel",function(){
+		location.href = "/story/mongCare/";
+	});
+
+	$('[name="animal_type"]:eq(0)').change();
+});
+</script>
+	<main id="mainContainer">
+	<form method="post" name="p_frm" action="./f_write_action.php" enctype='multipart/form-data'>
+	<input type="hidden" name="animal_no" value="">
+	<input type="file" name="up_file1" data-no="1" class="up_file" value="" style="display:none;">
+	<input type="file" name="up_file2" data-no="2" class="up_file" value="" style="display:none;">
+	<input type="file" name="up_file3" data-no="3" class="up_file" value="" style="display:none;">
+	<input type="file" name="up_file4" data-no="4" class="up_file" value="" style="display:none;">
+	<input type="file" name="up_file5" data-no="5" class="up_file" value="" style="display:none;">
+		<div id="mainCon_inner" class="clearfix">
+		
+
+			<div class="m_write_wrap">
+				<h4 class="pb20">
+					찾습니다
+				</h4>
+					
+				<section class="w_select_friend">
+					<p>
+						함께한 반려동물을 선택하세요.
+					</p>
+
+					<div class="upload01_pop_con">
+			
+						<div class="row">
+							<div class="upload01_pop_div01">
+								<span>
+									반려동물
+								</span>
+							</div>
+							<div class="upload01_pop_div02">
+								<select name="animal_type">
+									<?=option_make($animal_gubun_op,"")?>
+								</select>
+							</div>
+						</div><!-- row end -->
+						
+					</div>
+					
+					<div class="inner my_animal_box">
+						
+						<div class="row my_animal_list">
+						
+							<div class="another_friend">
+							</div><!-- another_friend end -->							
+						</div>						
+					</div>
+				</section><!-- w_select_friend  end -->
+				
+				<section style="display:none;" class="animalGubun">
+					<div class="upload01_pop_con">
+			
+						<div class="row">
+							<div class="upload01_pop_div01">
+								<span>
+									반려동물
+								</span>
+							</div>
+							<div class="upload01_pop_div02">
+								<select name="animal_type">
+									<?=option_make($animal_gubun_op,"")?>
+								</select>
+							</div>
+						</div><!-- row end -->
+						
+						<div class="row">
+							<div class="upload01_pop_div01">
+								<span class="animal_tp1">
+									크기
+								</span>
+							</div>
+							<div class="upload01_pop_div02">
+								<select name="animal_option">
+									
+								</select>
+							</div>
+						</div><!-- row end -->
+						
+						<div class="row">
+							<div class="upload01_pop_div01">
+								<span class="animal_tp2">
+									견종
+								</span>
+							</div>
+							<div class="upload01_pop_div02">
+								<select name="animal_title">
+
+								</select>
+							</div>
+						</div><!-- row end -->
+						
+						<div class="row">
+							<div class="upload01_pop_div01">
+								<span>
+									성별
+								</span>
+							</div>
+							<div class="upload01_pop_div02">
+								<select name="animal_sex">
+									<?=option_make($sex3_op,"")?>
+
+								</select>
+							</div>
+						</div><!-- row end -->
+						
+						<div class="row">
+							<div class="upload01_pop_div01">
+								<span>
+									나이
+								</span>
+							</div>
+							<div class="upload01_pop_div02">
+								<input type="text" name="animal_birth" placeholder="1살">
+							</div>
+						</div><!-- row end -->
+						
+						<div class="row">
+							<div class="upload01_pop_div01">
+								<span>
+									이름
+								</span>
+							</div>
+							<div class="upload01_pop_div02">
+								<input type="text" name="animal_name" />
+							</div>
+						</div>
+						
+					</div>
+				</section>
+
+				<section class="section_find">
+					<p class="w_u_p">
+						실종일
+					</p>
+					<div class="s_f_input_box1">
+						<input type="text" name="disappear_date" autocomplete="off"  id="date1" />
+					</div>
+					
+					<p class="w_u_p">
+						실종장소
+					</p>
+					<div class="s_f_input_box2">
+						<input type="text" name="disappear_addr" />
+					</div>
+					
+					<p class="w_u_p">
+						털색
+					</p>
+					<div class="s_f_input_box2">
+						<input type="text" name="coat_colour" />
+					</div>
+					
+					<p class="w_u_p">
+						특징
+					</p>
+					<div class="s_f_input_box2">
+						<textarea class="w_textarea" name="content"></textarea>
+					</div>
+					
+					<p class="w_u_p">
+						연락처
+					</p>
+					<div class="s_f_input_box3">
+						<input type="text"  placeholder="" name="tel" />
+						<input type="text"  placeholder="" name="mobile" />
+					</div>	
+					
+					<p class="w_u_p">
+						사진등록
+					</p>
+					
+					
+					<div class="s_f_input_box2">
+						
+						<ul class="pr wh100 imgUl mb15 clearfix imgReadDiv">
+							
+							<!--<li class="prNb imgUl_li representImgRead">
+								<img class="pr w100_hAtuo" src="https://image.ohou.se/image/resize/bucketplace-v2-development/uploads-cards-snapshots-1554706095431_q.jpg/1700/none" style="height:100%;" />
+								<span class="pa remove r_removeImg">x</span>
+							</li>-->
+						
+							<li class="prNb imgUl_li representImg plusImg">
+								<span class="pa add">
+								+
+								</span>
+							</li>
+						</ul>
+						
+						
+						<p class="f12 pr wh100 pb10">
+							사진은 최대 5개까지 업로드 가능합니다.
+						</p>
+						
+					</div>	
+					
+				</section>
+				
+				
+				
+				
+				<div class="f0 pt40 bS pb40 pr wh100" style="text-align: center;">
+					<a class="upload_Save">
+						등록
+					</a>
+					<a class="upload_cancel">
+						취소
+					</a>
+				</div>
+				
+				
+			</div>
+
+			
+		</div><!-- mainCon_inner end -->
+		</form>
+	</main><!-- main end -->
+
+<style>
+#ui-datepicker-div {z-index: 9999999999999999999999999999999999999999999999999999999999 !important;}
+.ui-state-default {text-align: center !important;}
+</style>
+<link rel="stylesheet" href="/js/jquery-ui-1.12.1/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="/js/datepicker-ko.js"></script>
+
+<!--<div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"></div>-->
+<script>
+$(function(){
+	$("#date1").datepicker();
+});
+</script>
+
+<!-- 팝업 end -->
+<?
+include $_SERVER['DOCUMENT_ROOT']."/inc/foot.html";
+?>
